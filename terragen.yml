@@ -1,0 +1,11 @@
+version: 0.6.0
+repo-group: github.com/nikhilsbhat
+project-module: github.com/nikhilsbhat/terraform-provider-gocd
+provider: gocd
+provider-path: /Users/nikhil.bhat/my-opensource/terraform-provider-gocd
+resources:
+- resource_plugins
+- resource_auth
+data-sources: []
+importers:
+- ""
