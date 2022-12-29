@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/nikhilsbhat/gocd-sdk-go"
@@ -47,5 +48,6 @@ func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, di
 	}
 
 	goCDClient := gocd.NewClient(clientCfg.url, clientCfg.username, clientCfg.password, clientCfg.loglevel, clientCfg.ca)
+
 	return goCDClient, nil
 }

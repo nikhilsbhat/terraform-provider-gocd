@@ -11,6 +11,8 @@
 //	https://github.com/nikhilsbhat/terragen
 //
 // ----------------------------------------------------------------------------
+//
+//nolint:gocritic
 package main
 
 import (
@@ -20,5 +22,6 @@ import (
 
 func main() {
 	plugin.Serve(&plugin.ServeOpts{
-		ProviderFunc: gocd.Provider})
+		ProviderFunc: gocd.Provider,
+	})
 }

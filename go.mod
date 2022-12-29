@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/google/go-cmp v0.5.9
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.24.1
-	github.com/nikhilsbhat/gocd-sdk-go v0.0.2
+	github.com/nikhilsbhat/gocd-sdk-go v0.0.3
 )
 
 require (

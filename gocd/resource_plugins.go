@@ -11,14 +11,17 @@
 //	https://github.com/nikhilsbhat/terragen
 //
 // ----------------------------------------------------------------------------
+//
+//nolint:gocritic
 package gocd
 
 import (
 	"context"
+	"log"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/nikhilsbhat/gocd-sdk-go"
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
-	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -96,7 +99,7 @@ func resourcePluginsCreate(ctx context.Context, d *schema.ResourceData, meta int
 		}
 
 		pluginSettings := gocd.PluginSettings{
-			ID:            utils.String(d.Get(utils.TerraformResourceID)),
+			ID:            utils.String(d.Get(utils.TerraformPluginID)),
 			Configuration: getPluginConfiguration(d.Get(utils.TerraformResourcePluginConfiguration)),
 		}
 
@@ -116,7 +119,7 @@ func resourcePluginsCreate(ctx context.Context, d *schema.ResourceData, meta int
 func resourcePluginsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	response, err := defaultConfig.GetPluginSettings(utils.String(d.Get(utils.TerraformResourceID)))
+	response, err := defaultConfig.GetPluginSettings(utils.String(d.Get(utils.TerraformPluginID)))
 	if err != nil {
 		return diag.Errorf("getting plugin configuration errored with: %v", err)
 	}
@@ -133,11 +136,11 @@ func resourcePluginsDelete(ctx context.Context, d *schema.ResourceData, meta int
 
 	id := d.Id()
 	if len(id) == 0 {
-		return diag.Errorf("resource with the specified ID not found")
+		return diag.Errorf("resource with the ID %s not found", id)
 	}
 
 	pluginSettings := gocd.PluginSettings{
-		ID:            utils.String(d.Get(utils.TerraformResourceID)),
+		ID:            utils.String(d.Get(utils.TerraformPluginID)),
 		Configuration: []gocd.PluginConfiguration{},
 		ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
 	}
@@ -159,7 +162,7 @@ func resourcePluginsUpdate(ctx context.Context, d *schema.ResourceData, meta int
 		oldCfg, newCfg := d.GetChange(utils.TerraformResourcePluginConfiguration)
 		if !cmp.Equal(oldCfg, newCfg) {
 			pluginSettings := gocd.PluginSettings{
-				ID:            utils.String(d.Get(utils.TerraformResourceID)),
+				ID:            utils.String(d.Get(utils.TerraformPluginID)),
 				Configuration: getPluginConfiguration(newCfg),
 				ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
 			}
@@ -174,6 +177,7 @@ func resourcePluginsUpdate(ctx context.Context, d *schema.ResourceData, meta int
 	}
 
 	log.Printf("nothing to update so skipping")
+
 	return nil
 }
 
