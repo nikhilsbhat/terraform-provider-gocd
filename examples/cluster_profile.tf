@@ -39,31 +39,31 @@ resource "gocd_cluster_profile" "ec2_cluster_profile" {
     value = "https://gocd.sample.com/go"
   }
   properties {
-    key = "auto_register_timeout"
+    key   = "auto_register_timeout"
     value = "60s"
   }
   properties {
-    key = "max_elastic_agents"
+    key   = "max_elastic_agents"
     value = "2"
   }
   properties {
-    key = "aws_region"
+    key   = "aws_region"
     value = "ap-south-1"
   }
   properties {
-    key = "aws_profile"
+    key   = "aws_profile"
     value = "dev"
   }
   properties {
-    key = "aws_endpoint_url"
+    key   = "aws_endpoint_url"
     value = "https://0.0.0.0:64527"
   }
   properties {
-    key = "aws_access_key_id"
+    key   = "aws_access_key_id"
     value = "dsdfmldfkjgcdfjgcdjfdfjgkcdfgfn"
   }
   properties {
-    key = "aws_secret_access_key"
+    key   = "aws_secret_access_key"
     value = "dsdfmldfkjgcdfjgcdjfdfjgkcdfgfn"
   }
 }

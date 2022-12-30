@@ -142,7 +142,7 @@ func resourceClusterProfileDelete(ctx context.Context, d *schema.ResourceData, m
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
-	if len(id) == 0 {
+	if len(d.Id()) == 0 {
 		return diag.Errorf("resource with the ID '%s' not found", id)
 	}
 
@@ -150,7 +150,7 @@ func resourceClusterProfileDelete(ctx context.Context, d *schema.ResourceData, m
 
 	err := defaultConfig.DeleteClusterProfile(profileID)
 	if err != nil {
-		return diag.Errorf("updating plugin configuration errored with: %v", err)
+		return diag.Errorf("deleting cluster profile %s errored with: %v", profileID, err)
 	}
 
 	d.SetId("")

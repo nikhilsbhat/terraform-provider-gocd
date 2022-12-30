@@ -135,7 +135,7 @@ func resourceElasticAgentProfileDelete(ctx context.Context, d *schema.ResourceDa
 
 	err := defaultConfig.DeleteElasticAgentProfile(profileID)
 	if err != nil {
-		return diag.Errorf("updating elastic agent profile errored with: %v", err)
+		return diag.Errorf("deleting elastic agent profile %s errored with: %v", profileID, err)
 	}
 
 	d.SetId("")

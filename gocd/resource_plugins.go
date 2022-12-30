@@ -131,30 +131,6 @@ func resourcePluginsRead(ctx context.Context, d *schema.ResourceData, meta inter
 	return nil
 }
 
-func resourcePluginsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	defaultConfig := meta.(gocd.GoCd)
-
-	id := d.Id()
-	if len(id) == 0 {
-		return diag.Errorf("resource with the ID %s not found", id)
-	}
-
-	pluginSettings := gocd.PluginSettings{
-		ID:            utils.String(d.Get(utils.TerraformPluginID)),
-		Configuration: []gocd.PluginConfiguration{},
-		ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
-	}
-
-	_, err := defaultConfig.UpdatePluginSettings(pluginSettings)
-	if err != nil {
-		return diag.Errorf("updating plugin configuration errored with: %v", err)
-	}
-
-	d.SetId("")
-
-	return nil
-}
-
 func resourcePluginsUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
@@ -181,6 +157,29 @@ func resourcePluginsUpdate(ctx context.Context, d *schema.ResourceData, meta int
 	return nil
 }
 
+func resourcePluginsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	defaultConfig := meta.(gocd.GoCd)
+
+	if id := d.Id(); len(id) == 0 {
+		return diag.Errorf("resource with the ID %s not found", id)
+	}
+
+	pluginSettings := gocd.PluginSettings{
+		ID:            utils.String(d.Get(utils.TerraformPluginID)),
+		Configuration: []gocd.PluginConfiguration{},
+		ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
+	}
+
+	_, err := defaultConfig.UpdatePluginSettings(pluginSettings)
+	if err != nil {
+		return diag.Errorf("updating plugin configuration errored with: %v", err)
+	}
+
+	d.SetId("")
+
+	return nil
+}
+
 func getPluginConfiguration(configs interface{}) []gocd.PluginConfiguration {
 	pluginsConfigurations := make([]gocd.PluginConfiguration, 0)
 	for _, config := range configs.(*schema.Set).List() {
@@ -189,6 +188,7 @@ func getPluginConfiguration(configs interface{}) []gocd.PluginConfiguration {
 			Key:            utils.String(v[utils.TerraformResourceKey]),
 			Value:          utils.String(v[utils.TerraformResourceValue]),
 			EncryptedValue: utils.String(v[utils.TerraformResourceENCValue]),
+			IsSecure:       utils.Bool(v[utils.TerraformResourceIsSecure]),
 		})
 	}
 
