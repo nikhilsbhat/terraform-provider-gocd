@@ -182,14 +182,16 @@ func resourcePluginsSettingsDelete(ctx context.Context, d *schema.ResourceData, 
 
 func getPluginConfiguration(configs interface{}) []gocd.PluginConfiguration {
 	pluginsConfigurations := make([]gocd.PluginConfiguration, 0)
-	for _, config := range configs.(*schema.Set).List() {
+	for i, config := range configs.(*schema.Set).List() {
 		v := config.(map[string]interface{})
 		pluginsConfigurations = append(pluginsConfigurations, gocd.PluginConfiguration{
 			Key:            utils.String(v[utils.TerraformResourceKey]),
 			Value:          utils.String(v[utils.TerraformResourceValue]),
 			EncryptedValue: utils.String(v[utils.TerraformResourceENCValue]),
-			IsSecure:       utils.Bool(v[utils.TerraformResourceIsSecure]),
 		})
+		if isSecure, ok := v[utils.TerraformResourceIsSecure]; ok {
+			pluginsConfigurations[i].IsSecure = utils.Bool(isSecure)
+		}
 	}
 
 	return pluginsConfigurations
