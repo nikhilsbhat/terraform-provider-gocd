@@ -63,36 +63,36 @@ func clusterProfile() *schema.Resource {
 func resourceClusterProfileCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.IsNewResource() {
-		id := d.Id()
-
-		if len(id) == 0 {
-			newID, err := utils.GetRandomID()
-			if err != nil {
-				d.SetId("")
-
-				return diag.Errorf("errored while fetching randomID %v", err)
-			}
-			id = newID
-		}
-
-		cfg := gocd.CommonConfig{
-			ID:         utils.String(d.Get(utils.TerraformResourceProfileID)),
-			PluginID:   utils.String(d.Get(utils.TerraformPluginID)),
-			Properties: getPluginConfiguration(d.Get(utils.TerraformProperties)),
-		}
-
-		_, err := defaultConfig.CreateClusterProfile(cfg)
-		if err != nil {
-			return diag.Errorf("creating cluster profile %s setting for plugin %s errored with %v", cfg.ID, cfg.PluginID, err)
-		}
-
-		d.SetId(id)
-
-		return resourceClusterProfileRead(ctx, d, meta)
+	if !d.IsNewResource() {
+		return nil
 	}
 
-	return nil
+	id := d.Id()
+
+	if len(id) == 0 {
+		newID, err := utils.GetRandomID()
+		if err != nil {
+			d.SetId("")
+
+			return diag.Errorf("errored while fetching randomID %v", err)
+		}
+		id = newID
+	}
+
+	cfg := gocd.CommonConfig{
+		ID:         utils.String(d.Get(utils.TerraformResourceProfileID)),
+		PluginID:   utils.String(d.Get(utils.TerraformPluginID)),
+		Properties: getPluginConfiguration(d.Get(utils.TerraformProperties)),
+	}
+
+	_, err := defaultConfig.CreateClusterProfile(cfg)
+	if err != nil {
+		return diag.Errorf("creating cluster profile %s setting for plugin %s errored with %v", cfg.ID, cfg.PluginID, err)
+	}
+
+	d.SetId(id)
+
+	return resourceClusterProfileRead(ctx, d, meta)
 }
 
 func resourceClusterProfileRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

@@ -2,7 +2,6 @@ package gocd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 
@@ -65,51 +64,46 @@ func configRepository() *schema.Resource {
 func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.IsNewResource() {
-		id := d.Id()
-
-		if len(id) == 0 {
-			newID, err := utils.GetRandomID()
-			if err != nil {
-				d.SetId("")
-
-				return diag.Errorf("errored while fetching randomID %v", err)
-			}
-			id = newID
-		}
-
-		rules, err := getRules(d.Get(utils.TerraformResourceRules))
-		if err != nil {
-			return diag.Errorf("reading rules errored with %v", err)
-		}
-		material := getMaterials(d.Get(utils.TerraformResourceMaterial))
-		if err != nil {
-			return diag.Errorf("reading material errored with %v", err)
-		}
-
-		cfg := gocd.ConfigRepo{
-			ID:            utils.String(d.Get(utils.TerraformResourceProfileID)),
-			PluginID:      utils.String(d.Get(utils.TerraformPluginID)),
-			Configuration: getPluginConfiguration(d.Get(utils.TerraformResourceConfiguration)),
-			Rules:         rules,
-			Material:      material,
-		}
-
-		out, err := json.Marshal(cfg)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("ConfigRepo Object: %s", string(out))
-		if err = defaultConfig.CreateConfigRepo(cfg); err != nil {
-			return diag.Errorf("creating config repo %s errored with %v", cfg.ID, err)
-		}
-
-		d.SetId(id)
-
-		return resourceConfigRepoRead(ctx, d, meta)
+	if !d.IsNewResource() {
+		return nil
 	}
 
-	return nil
+	id := d.Id()
+
+	if len(id) == 0 {
+		newID, err := utils.GetRandomID()
+		if err != nil {
+			d.SetId("")
+
+			return diag.Errorf("errored while fetching randomID %v", err)
+		}
+		id = newID
+	}
+
+	rules, err := getRules(d.Get(utils.TerraformResourceRules))
+	if err != nil {
+		return diag.Errorf("reading rules errored with %v", err)
+	}
+	material := getMaterials(d.Get(utils.TerraformResourceMaterial))
+	if err != nil {
+		return diag.Errorf("reading material errored with %v", err)
+	}
+
+	cfg := gocd.ConfigRepo{
+		ID:            utils.String(d.Get(utils.TerraformResourceProfileID)),
+		PluginID:      utils.String(d.Get(utils.TerraformPluginID)),
+		Configuration: getPluginConfiguration(d.Get(utils.TerraformResourceConfiguration)),
+		Rules:         rules,
+		Material:      material,
+	}
+
+	if err = defaultConfig.CreateConfigRepo(cfg); err != nil {
+		return diag.Errorf("creating config repo %s errored with %v", cfg.ID, err)
+	}
+
+	d.SetId(id)
+
+	return resourceConfigRepoRead(ctx, d, meta)
 }
 
 func resourceConfigRepoRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

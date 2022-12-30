@@ -17,7 +17,6 @@ const (
 	TerraformResourceEtag                = "etag"
 	TerraformResourceAttr                = "attributes"
 	TerraformResourceType                = "type"
-	TerraformResourceGIT                 = "git"
 	TerraformResourceFgPrint             = "fingerprint"
 	TerraformResourceURL                 = "url"
 	TerraformResourceUserName            = "username"
@@ -38,5 +37,6 @@ const (
 	TerraformResourceIgnoreForScheduling = "ignore_for_scheduling"
 	TerraformResourceDestination         = "destination"
 	TerraformResourceInvertFilter        = "invert_filter"
+	TerraformResourceAllowKnownUser      = "allow_only_known_users_to_login"
 	TerraformResourceIgnore              = "ignore"
 )

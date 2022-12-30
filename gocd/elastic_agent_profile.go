@@ -126,8 +126,7 @@ func resourceElasticAgentProfileUpdate(ctx context.Context, d *schema.ResourceDa
 func resourceElasticAgentProfileDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	id := d.Id()
-	if len(id) == 0 {
+	if id := d.Id(); len(id) == 0 {
 		return diag.Errorf("resource with the ID '%s' not found", id)
 	}
 

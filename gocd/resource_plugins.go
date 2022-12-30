@@ -85,35 +85,35 @@ func resourcePlugins() *schema.Resource {
 func resourcePluginsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.IsNewResource() {
-		id := d.Id()
-
-		if len(id) == 0 {
-			newID, err := utils.GetRandomID()
-			if err != nil {
-				d.SetId("")
-
-				return diag.Errorf("errored while fetching randomID %v", err)
-			}
-			id = newID
-		}
-
-		pluginSettings := gocd.PluginSettings{
-			ID:            utils.String(d.Get(utils.TerraformPluginID)),
-			Configuration: getPluginConfiguration(d.Get(utils.TerraformResourcePluginConfiguration)),
-		}
-
-		_, err := defaultConfig.CreatePluginSettings(pluginSettings)
-		if err != nil {
-			return diag.Errorf("applying plugin setting errored with %v", err)
-		}
-
-		d.SetId(id)
-
-		return resourcePluginsRead(ctx, d, meta)
+	if !d.IsNewResource() {
+		return nil
 	}
 
-	return nil
+	id := d.Id()
+
+	if len(id) == 0 {
+		newID, err := utils.GetRandomID()
+		if err != nil {
+			d.SetId("")
+
+			return diag.Errorf("errored while fetching randomID %v", err)
+		}
+		id = newID
+	}
+
+	pluginSettings := gocd.PluginSettings{
+		ID:            utils.String(d.Get(utils.TerraformPluginID)),
+		Configuration: getPluginConfiguration(d.Get(utils.TerraformResourcePluginConfiguration)),
+	}
+
+	_, err := defaultConfig.CreatePluginSettings(pluginSettings)
+	if err != nil {
+		return diag.Errorf("applying plugin setting errored with %v", err)
+	}
+
+	d.SetId(id)
+
+	return resourcePluginsRead(ctx, d, meta)
 }
 
 func resourcePluginsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
