@@ -129,7 +129,7 @@ func resourceClusterProfileUpdate(ctx context.Context, d *schema.ResourceData, m
 				return diag.Errorf("updating cluster profile %s errored with: %v", cfg.ID, err)
 			}
 
-			return resourcePluginsRead(ctx, d, meta)
+			return resourceClusterProfileRead(ctx, d, meta)
 		}
 	}
 

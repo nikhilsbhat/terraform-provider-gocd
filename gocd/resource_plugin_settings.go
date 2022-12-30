@@ -27,12 +27,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourcePlugins() *schema.Resource {
+func resourcePluginsSetting() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourcePluginsCreate,
-		ReadContext:   resourcePluginsRead,
-		DeleteContext: resourcePluginsDelete,
-		UpdateContext: resourcePluginsUpdate,
+		CreateContext: resourcePluginsSettingsCreate,
+		ReadContext:   resourcePluginsSettingsRead,
+		DeleteContext: resourcePluginsSettingsDelete,
+		UpdateContext: resourcePluginsSettingsUpdate,
 		Schema: map[string]*schema.Schema{
 			"plugin_id": {
 				Type:        schema.TypeString,
@@ -82,7 +82,7 @@ func resourcePlugins() *schema.Resource {
 	}
 }
 
-func resourcePluginsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -113,10 +113,10 @@ func resourcePluginsCreate(ctx context.Context, d *schema.ResourceData, meta int
 
 	d.SetId(id)
 
-	return resourcePluginsRead(ctx, d, meta)
+	return resourcePluginsSettingsRead(ctx, d, meta)
 }
 
-func resourcePluginsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	response, err := defaultConfig.GetPluginSettings(utils.String(d.Get(utils.TerraformPluginID)))
@@ -131,7 +131,7 @@ func resourcePluginsRead(ctx context.Context, d *schema.ResourceData, meta inter
 	return nil
 }
 
-func resourcePluginsUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if d.HasChange(utils.TerraformResourcePluginConfiguration) {
@@ -148,7 +148,7 @@ func resourcePluginsUpdate(ctx context.Context, d *schema.ResourceData, meta int
 				return diag.Errorf("updating plugin configuration errored with: %v", err)
 			}
 
-			return resourcePluginsRead(ctx, d, meta)
+			return resourcePluginsSettingsRead(ctx, d, meta)
 		}
 	}
 
@@ -157,7 +157,7 @@ func resourcePluginsUpdate(ctx context.Context, d *schema.ResourceData, meta int
 	return nil
 }
 
-func resourcePluginsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {

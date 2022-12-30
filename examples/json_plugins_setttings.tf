@@ -1,4 +1,4 @@
-//resource "gocd_plugins" "json_plugin_settings" {
+//resource "gocd_plugin_setting" "json_plugin_settings" {
 //  plugin_id = "json.config.plugin"
 //  plugin_configurations {
 //    key   = "pipeline_pattern"

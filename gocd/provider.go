@@ -52,7 +52,7 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"gocd_plugins":               resourcePlugins(),
+			"gocd_plugin_setting":        resourcePluginsSetting(),
 			"gocd_auth_config":           resourceAuthConfig(),
 			"gocd_cluster_profile":       clusterProfile(),
 			"gocd_elastic_agent_profile": elasticAgentProfile(),
