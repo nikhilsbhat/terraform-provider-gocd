@@ -39,4 +39,6 @@ const (
 	TerraformResourceInvertFilter        = "invert_filter"
 	TerraformResourceAllowKnownUser      = "allow_only_known_users_to_login"
 	TerraformResourceIgnore              = "ignore"
+	TerraformEncryptedValue              = "encrypted_value"
+	TerraformValue                       = "value"
 )

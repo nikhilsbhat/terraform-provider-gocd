@@ -57,6 +57,7 @@ func Provider() *schema.Provider {
 			"gocd_cluster_profile":       clusterProfile(),
 			"gocd_elastic_agent_profile": elasticAgentProfile(),
 			"gocd_config_repository":     configRepository(),
+			"gocd_encrypt_value":         encryptValue(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{},
