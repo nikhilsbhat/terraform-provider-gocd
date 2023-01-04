@@ -27,7 +27,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func clusterProfile() *schema.Resource {
+func resourceClusterProfile() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceClusterProfileCreate,
 		ReadContext:   resourceClusterProfileRead,

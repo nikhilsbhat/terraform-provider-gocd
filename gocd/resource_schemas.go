@@ -2,6 +2,43 @@ package gocd
 
 import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
+func environmentsSchema() *schema.Schema {
+	return &schema.Schema{
+		Type:        schema.TypeSet,
+		Computed:    false,
+		Optional:    true,
+		Description: "The list of environment variables that will be passed to all tasks (commands) that are part of this environment.",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"name": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Computed:    false,
+					Description: "The name of the environment variable.",
+				},
+				"value": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Computed:    false,
+					Description: "The value of the environment variable. You MUST specify one of value or encrypted_value.",
+				},
+				"encrypted_value": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Computed:    false,
+					Description: "The encrypted value of the environment variable. You MUST specify one of value or encrypted_value.",
+				},
+				"secure": {
+					Type:        schema.TypeBool,
+					Optional:    true,
+					Computed:    false,
+					Description: "Whether environment variable is secure or not. When set to true, encrypts the value if one is specified. The default value is false.",
+				},
+			},
+		},
+	}
+}
+
 func propertiesSchema() *schema.Schema {
 	return &schema.Schema{
 		Type:        schema.TypeSet,

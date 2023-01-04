@@ -41,4 +41,6 @@ const (
 	TerraformResourceIgnore              = "ignore"
 	TerraformEncryptedValue              = "encrypted_value"
 	TerraformValue                       = "value"
+	TerraformPipelines                   = "pipelines"
+	TerraformEnvVar                      = "environment_variables"
 )

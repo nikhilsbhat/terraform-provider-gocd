@@ -13,7 +13,7 @@ import (
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 )
 
-func configRepository() *schema.Resource {
+func resourceConfigRepository() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceConfigRepoCreate,
 		ReadContext:   resourceConfigRepoRead,
