@@ -1,4 +1,4 @@
-package gocd
+package provider
 
 import (
 	"context"
@@ -34,15 +34,6 @@ func resourceEnvironment() *schema.Resource {
 				Description: "List of pipeline names that should be added to this environment.",
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-			//"metadata": {
-			//	Type:        schema.TypeMap,
-			//	Optional:    true,
-			//	Computed:    false,
-			//	Description: "Dummy type to handle updates",
-			//	Elem: &schema.Schema{
-			//		Type: schema.TypeString,
-			//	},
-			//},
 			"environment_variables": environmentsSchema(),
 			"etag": {
 				Type:        schema.TypeString,

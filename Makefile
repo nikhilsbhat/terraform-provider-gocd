@@ -3,7 +3,9 @@ GOFMT_FILES?=$$(find . -not -path "./vendor/*" -type f -name '*.go')
 APP_NAME?=terraform-provider-gocd
 APP_DIR?=$$(git rev-parse --show-toplevel)
 SRC_PACKAGES=$(shell go list -mod=vendor ./... | grep -v "vendor" | grep -v "mocks")
-VERSION?=0.0.1
+#VERSION?=0.0.1
+VERSION := $(shell git tag --sort=-creatordate | head -1 | sed  -n 's/v\([0-9]*\).\([0-9]*\).\([0-9]*\)/\1.\2.\3/p')
+NEXT_VERSION := $(shell echo ${VERSION}| awk -F '.' '{print $$1 "." $$2 "." $$3 +1 }' )
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -55,3 +57,24 @@ create.newversion.tfregistry: local.build ## Sets up the local terraform registr
 upload.newversion.provider: create.newversion.tfregistry ## Uploads the updated provider to local terraform registry.
 	@rm -rf  ~/terraform-providers/registry.terraform.io/hashicorp/gocd/$(VERSION)/darwin_arm64/terraform-provider-gocd_v$(VERSION)
 	@cp terraform-provider-gocd_v$(VERSION) ~/terraform-providers/registry.terraform.io/hashicorp/gocd/$(VERSION)/darwin_arm64/
+
+generate.document:
+	@tfplugindocs generate examples/
+
+tflint:
+	@terraform fmt -write=false -check=true -diff=true examples/
+
+version:
+	@echo $(NEXT_VERSION)
+
+build:
+	GORELEASER_CURRENT_TAG=$(VERSION) goreleaser build --rm-dist --snapshot
+
+local.build: local.check ## Generates the artifact with the help of 'go build'
+	GORELEASER_CURRENT_TAG=$(VERSION) BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT} goreleaser build --rm-dist
+
+publish: local.check ## Builds and publishes the app
+	GOVERSION=${GOVERSION} BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT} PLUGIN_PATH=${APP_DIR} goreleaser release --rm-dist
+
+mock.publish: local.check ## Builds and mocks app release
+	GOVERSION=${GOVERSION} BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT} PLUGIN_PATH=${APP_DIR} goreleaser release --skip-publish --rm-dist

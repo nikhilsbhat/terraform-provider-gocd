@@ -13,7 +13,7 @@
 // ----------------------------------------------------------------------------
 //
 //nolint:gocritic
-package gocd
+package provider
 
 import (
 	"context"

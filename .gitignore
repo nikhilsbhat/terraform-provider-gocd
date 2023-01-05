@@ -18,3 +18,5 @@ terraform.tfstate*
 *.tfplan
 .terraform
 *.log
+
+/dist

@@ -17,11 +17,11 @@ package main
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	"github.com/nikhilsbhat/terraform-provider-gocd/gocd"
+	"github.com/nikhilsbhat/terraform-provider-gocd/internal/provider"
 )
 
 func main() {
 	plugin.Serve(&plugin.ServeOpts{
-		ProviderFunc: gocd.Provider,
+		ProviderFunc: provider.Provider,
 	})
 }
