@@ -28,12 +28,10 @@ local.check: local.fmt ## Loads all the dependencies to vendor directory
 	go mod vendor
 	go mod tidy
 
-local.build: local.check ## Generates the artifact with the help of 'go build'
+build.local: local.check ## Generates the artifact with the help of 'go build'
 	go build -o $(APP_NAME)_v$(VERSION) -ldflags="-s -w"
 
-local.push: local.build ## Pushes built artifact to the specified location
-
-local.run: local.build ## Generates the artifact and start the service in the current directory
+local.run: build.local ## Generates the artifact and start the service in the current directory
 	./${APP_NAME}
 
 lint: ## Lint's application for errors, it is a linters aggregator (https://github.com/golangci/golangci-lint).
@@ -51,7 +49,7 @@ generate.mock: ## generates mocks for the selected source packages.
 test: ## runs test cases
 	@time go test $(TEST_FILES) -mod=vendor -coverprofile cover.out && go tool cover -html=cover.out -o cover.html && open cover.html
 
-create.newversion.tfregistry: local.build ## Sets up the local terraform registry with the version specified.
+create.newversion.tfregistry: build.local ## Sets up the local terraform registry with the version specified.
 	@mkdir -p ~/terraform-providers/registry.terraform.io/hashicorp/gocd/$(VERSION)/darwin_arm64/
 
 upload.newversion.provider: create.newversion.tfregistry ## Uploads the updated provider to local terraform registry.

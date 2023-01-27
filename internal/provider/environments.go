@@ -184,7 +184,7 @@ func getEnvChanges(d *schema.ResourceData) (environmentChanges, error) {
 
 	envVars, err := getEnvironments(oldVars)
 	if err != nil {
-		return changes, fmt.Errorf("reading environment errored with %v", err)
+		return changes, fmt.Errorf("reading environment errored with %w", err)
 	}
 
 	changes.equal = true
@@ -194,7 +194,7 @@ func getEnvChanges(d *schema.ResourceData) (environmentChanges, error) {
 	if !cmp.Equal(oldVars, newVars) {
 		envVars, err = getEnvironments(newVars)
 		if err != nil {
-			return changes, fmt.Errorf("reading environment errored with %v", err)
+			return changes, fmt.Errorf("reading environment errored with %w", err)
 		}
 		changes.envVarsChanges = envVars
 		changes.equal = false

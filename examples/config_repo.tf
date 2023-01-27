@@ -33,3 +33,7 @@ resource "gocd_config_repository" "sample_config_repo" {
     }
   ]
 }
+
+data "gocd_config_repository" "sample_config_repo" {
+  profile_id = "sample_config_repo"
+}

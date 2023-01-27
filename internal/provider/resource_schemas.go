@@ -2,6 +2,164 @@ package provider
 
 import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
+func configRepoSchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"profile_id": {
+			Type:        schema.TypeString,
+			Required:    true,
+			Computed:    false,
+			ForceNew:    true,
+			Description: "The identifier of the elastic agent profile.",
+		},
+		"plugin_id": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Optional:    true,
+			Required:    false,
+			Description: "The plugin identifier of the cluster profile.",
+		},
+		"material": {
+			Type:        schema.TypeSet,
+			Computed:    true,
+			Description: "The material to be used by the config repo.",
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"type": {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Description: "The type of a material. Can be one of git, svn, hg, p4, tfs.",
+					},
+					"fingerprint": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						Computed:    true,
+						Description: "The fingerprint of the material.",
+					},
+					"attributes": {
+						Type:        schema.TypeSet,
+						Computed:    true,
+						Description: "The attributes for each material type.",
+						Elem: &schema.Resource{
+							Schema: map[string]*schema.Schema{
+								"url": {
+									Type:        schema.TypeString,
+									Optional:    true,
+									Computed:    true,
+									Description: "The URL of the subversion repository.",
+								},
+								"username": {
+									Type:        schema.TypeString,
+									Optional:    true,
+									Computed:    true,
+									Description: "The user account for the remote repository.",
+								},
+								"password": {
+									Type:        schema.TypeString,
+									Optional:    true,
+									Computed:    true,
+									Description: "The password for the specified user.",
+								},
+								"encrypted_password": {
+									Type:        schema.TypeString,
+									Optional:    true,
+									Computed:    true,
+									Description: "The encrypted password for the specified user.",
+								},
+								"branch": {
+									Type:        schema.TypeString,
+									Optional:    true,
+									Computed:    true,
+									Description: "The mercurial branch to build.",
+								},
+								"auto_update": {
+									Type:        schema.TypeBool,
+									Optional:    true,
+									Computed:    true,
+									Description: "Whether to poll for new changes or not.",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"configuration": {
+			Type:        schema.TypeList,
+			Computed:    true,
+			Optional:    true,
+			Description: "the list of configuration properties that represent the configuration of this profile.",
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"key": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						Computed:    true,
+						Description: "the name of the property key.",
+					},
+					"value": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						Computed:    true,
+						Description: "The value of the property",
+					},
+					"encrypted_value": {
+						Type:        schema.TypeString,
+						Optional:    true,
+						Computed:    true,
+						Description: "The encrypted value of the property",
+					},
+					"is_secure": {
+						Type:     schema.TypeBool,
+						Optional: true,
+						Computed: true,
+						Description: "Specify whether the given property is secure or not. If true and encrypted_value is not specified, " +
+							"GoCD will store the value in encrypted format.",
+					},
+				},
+			},
+		},
+		"rules": {
+			Type:        schema.TypeList,
+			Computed:    true,
+			Description: "The list of rules, which allows restricting the entities that the config repo can refer to.",
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"type": {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Optional:    true,
+						Description: "The type of entity that the rule is applied on. Currently environment, pipeline and pipeline_group are supported.",
+					},
+					"directive": {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Optional:    true,
+						Description: "The type of rule which can be either allow or deny.",
+					},
+					"action": {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Optional:    true,
+						Description: "The action that is being controlled via this rule. Only refer is supported as of now.",
+					},
+					"resource": {
+						Type:        schema.TypeString,
+						Computed:    true,
+						Optional:    true,
+						Description: "The actual entity on which the rule is applied. Resource should be the name of the entity or a wildcard which matches one or more entities.",
+					},
+				},
+			},
+		},
+		"etag": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Optional:    true,
+			Description: "Etag used to track the plugin settings",
+		},
+	}
+}
+
 func environmentsSchema() *schema.Schema {
 	return &schema.Schema{
 		Type:        schema.TypeSet,

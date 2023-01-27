@@ -3,7 +3,6 @@ resource "gocd_environment" "sample_environment" {
   pipelines = [
     "gocd-prometheus-exporter",
     "helm-images",
-    "action-movies-manual",
   ]
   environment_variables {
     name  = "TEST_ENV11"
