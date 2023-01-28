@@ -55,13 +55,13 @@ func resourceAuthConfig() *schema.Resource {
 				ForceNew:    true,
 				Description: "Allow only those users to login who have explicitly been added by an administrator.",
 			},
-			"properties": propertiesSchema(),
+			"properties": propertiesSchemaResource(),
 			"etag": {
 				Type:        schema.TypeString,
 				Required:    false,
 				Computed:    true,
 				ForceNew:    false,
-				Description: "Etag used to track the plugin settings",
+				Description: "Etag used to track the authorisation configuration.",
 			},
 		},
 	}

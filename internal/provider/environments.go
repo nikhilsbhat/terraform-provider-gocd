@@ -34,13 +34,13 @@ func resourceEnvironment() *schema.Resource {
 				Description: "List of pipeline names that should be added to this environment.",
 				Elem:        &schema.Schema{Type: schema.TypeString},
 			},
-			"environment_variables": environmentsSchema(),
+			"environment_variables": environmentsSchemaResource(),
 			"etag": {
 				Type:        schema.TypeString,
 				Required:    false,
 				Computed:    true,
 				ForceNew:    false,
-				Description: "etag used to track the plugin settings",
+				Description: "etag used to track the environment configurations.",
 			},
 		},
 	}

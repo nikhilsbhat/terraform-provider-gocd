@@ -35,7 +35,7 @@ func resourceConfigRepository() *schema.Resource {
 				Description: "The plugin identifier of the cluster profile.",
 			},
 			"material":      materialSchema(),
-			"configuration": propertiesSchema(),
+			"configuration": propertiesSchemaResource(),
 			"rules": {
 				Type:        schema.TypeList,
 				Optional:    true,

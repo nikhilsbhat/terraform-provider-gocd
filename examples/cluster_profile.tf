@@ -67,3 +67,7 @@ resource "gocd_cluster_profile" "ec2_cluster_profile" {
     value = "dsdfmldfkjgcdfjgcdjfdfjgkcdfgfn"
   }
 }
+
+data "gocd_cluster_profile" "ec2_cluster_profile" {
+  profile_id = "ec2_cluster_profile"
+}

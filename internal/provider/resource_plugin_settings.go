@@ -76,7 +76,7 @@ func resourcePluginsSetting() *schema.Resource {
 				Required:    false,
 				Computed:    true,
 				ForceNew:    false,
-				Description: "etag used to track the plugin settings",
+				Description: "Etag used to track the plugin settings.",
 			},
 		},
 	}

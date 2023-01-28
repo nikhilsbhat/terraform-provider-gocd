@@ -6,3 +6,7 @@ resource "gocd_auth_config" "password_file_config" {
     value = "/Users/nikhil.bhat/idfc/gocd-setup/.gocdadmin2"
   }
 }
+
+data "gocd_auth_config" "password_file_config" {
+  profile_id = "admin_new"
+}

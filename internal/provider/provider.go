@@ -62,7 +62,11 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"gocd_config_repository": dataSourceConfigRepository(),
+			"gocd_config_repository":     dataSourceConfigRepository(),
+			"gocd_cluster_profile":       datasourceClusterProfile(),
+			"gocd_elastic_agent_profile": datasourceElasticAgentProfile(),
+			"gocd_auth_config":           datasourceAuthConfig(),
+			"gocd_environment":           datasourceEnvironment(),
 		},
 
 		ConfigureContextFunc: client.GetGoCDClient,

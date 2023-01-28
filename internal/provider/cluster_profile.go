@@ -48,7 +48,7 @@ func resourceClusterProfile() *schema.Resource {
 				ForceNew:    true,
 				Description: "the plugin identifier of the cluster profile.",
 			},
-			"properties": propertiesSchema(),
+			"properties": propertiesSchemaResource(),
 			"etag": {
 				Type:        schema.TypeString,
 				Required:    false,

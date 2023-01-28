@@ -160,7 +160,7 @@ func configRepoSchema() map[string]*schema.Schema {
 	}
 }
 
-func environmentsSchema() *schema.Schema {
+func environmentsSchemaResource() *schema.Schema {
 	return &schema.Schema{
 		Type:        schema.TypeSet,
 		Computed:    false,
@@ -197,7 +197,44 @@ func environmentsSchema() *schema.Schema {
 	}
 }
 
-func propertiesSchema() *schema.Schema {
+func environmentsSchemaData() *schema.Schema {
+	return &schema.Schema{
+		Type:        schema.TypeList,
+		Computed:    true,
+		Optional:    true,
+		Description: "The list of environment variables that will be passed to all tasks (commands) that are part of this environment.",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"name": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Computed:    false,
+					Description: "The name of the environment variable.",
+				},
+				"value": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Computed:    false,
+					Description: "The value of the environment variable. You MUST specify one of value or encrypted_value.",
+				},
+				"encrypted_value": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Computed:    false,
+					Description: "The encrypted value of the environment variable. You MUST specify one of value or encrypted_value.",
+				},
+				"secure": {
+					Type:        schema.TypeBool,
+					Optional:    true,
+					Computed:    false,
+					Description: "Whether environment variable is secure or not. When set to true, encrypts the value if one is specified. The default value is false.",
+				},
+			},
+		},
+	}
+}
+
+func propertiesSchemaResource() *schema.Schema {
 	return &schema.Schema{
 		Type:        schema.TypeSet,
 		Required:    true,
@@ -233,6 +270,41 @@ func propertiesSchema() *schema.Schema {
 					Description: "Specify whether the given property is secure or not. If true and encrypted_value is not specified, " +
 						"GoCD will store the value in encrypted format.",
 				},
+			},
+		},
+	}
+}
+
+func propertiesSchemaData() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"key": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Computed:    false,
+				Description: "the name of the property key.",
+			},
+			"value": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    false,
+				ForceNew:    true,
+				Description: "The value of the property",
+			},
+			"encrypted_value": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    false,
+				ForceNew:    true,
+				Description: "The encrypted value of the property",
+			},
+			"is_secure": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: false,
+				ForceNew: true,
+				Description: "Specify whether the given property is secure or not. If true and encrypted_value is not specified, " +
+					"GoCD will store the value in encrypted format.",
 			},
 		},
 	}

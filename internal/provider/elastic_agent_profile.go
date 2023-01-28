@@ -33,13 +33,13 @@ func resourceElasticAgentProfile() *schema.Resource {
 				ForceNew:    true,
 				Description: "the plugin identifier of the cluster profile.",
 			},
-			"properties": propertiesSchema(),
+			"properties": propertiesSchemaResource(),
 			"etag": {
 				Type:        schema.TypeString,
 				Required:    false,
 				Computed:    true,
 				ForceNew:    false,
-				Description: "etag used to track the plugin settings",
+				Description: "etag used to track the elastic agent profile configurations",
 			},
 		},
 	}

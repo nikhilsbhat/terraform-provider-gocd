@@ -17,3 +17,7 @@ resource "gocd_environment" "sample_environment" {
     value = "value_env13"
   }
 }
+
+data "gocd_environment" "sample_environment" {
+  name = "sample_environment"
+}

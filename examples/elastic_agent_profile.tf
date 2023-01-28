@@ -59,3 +59,7 @@ resource "gocd_elastic_agent_profile" "sample_ec2" {
     value = "echo hi"
   }
 }
+
+data "gocd_elastic_agent_profile" "sample_ec2" {
+  profile_id         = "sample_ec2"
+}
