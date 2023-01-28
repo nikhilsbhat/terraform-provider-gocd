@@ -61,5 +61,5 @@ resource "gocd_elastic_agent_profile" "sample_ec2" {
 }
 
 data "gocd_elastic_agent_profile" "sample_ec2" {
-  profile_id         = "sample_ec2"
+  profile_id = "sample_ec2"
 }

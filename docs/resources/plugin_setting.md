@@ -22,7 +22,7 @@ description: |-
 
 ### Read-Only
 
-- `etag` (String) etag used to track the plugin settings
+- `etag` (String) Etag used to track the plugin settings.
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--plugin_configurations"></a>
