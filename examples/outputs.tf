@@ -22,3 +22,7 @@ output "sample_environment" {
 output "sample_ec2" {
   value = data.gocd_elastic_agent_profile.sample_ec2.properties
 }
+
+output "yaml_plugin_settings" {
+  value = data.gocd_plugin_setting.yaml_plugin_settings.configuration
+}
