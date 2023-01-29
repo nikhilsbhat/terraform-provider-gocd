@@ -67,7 +67,7 @@ func dataSourcePluginsSettingRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	if err = d.Set(utils.TerraformResourceConfiguration, flattenedConfiguration); err != nil {
-		return diag.Errorf("setting '%s' errored with %v", err, utils.TerraformResourceConfiguration)
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceConfiguration)
 	}
 
 	d.SetId(id)

@@ -2,6 +2,8 @@ package provider
 
 import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
+var settingAttrErrorTmp = "setting '%s' errored with %v"
+
 func configRepoSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		"profile_id": {
@@ -122,34 +124,7 @@ func configRepoSchema() map[string]*schema.Schema {
 			Type:        schema.TypeList,
 			Computed:    true,
 			Description: "The list of rules, which allows restricting the entities that the config repo can refer to.",
-			Elem: &schema.Resource{
-				Schema: map[string]*schema.Schema{
-					"type": {
-						Type:        schema.TypeString,
-						Computed:    true,
-						Optional:    true,
-						Description: "The type of entity that the rule is applied on. Currently environment, pipeline and pipeline_group are supported.",
-					},
-					"directive": {
-						Type:        schema.TypeString,
-						Computed:    true,
-						Optional:    true,
-						Description: "The type of rule which can be either allow or deny.",
-					},
-					"action": {
-						Type:        schema.TypeString,
-						Computed:    true,
-						Optional:    true,
-						Description: "The action that is being controlled via this rule. Only refer is supported as of now.",
-					},
-					"resource": {
-						Type:        schema.TypeString,
-						Computed:    true,
-						Optional:    true,
-						Description: "The actual entity on which the rule is applied. Resource should be the name of the entity or a wildcard which matches one or more entities.",
-					},
-				},
-			},
+			Elem:        rulesSchema(),
 		},
 		"etag": {
 			Type:        schema.TypeString,
@@ -496,6 +471,37 @@ func materialSchema() *schema.Schema {
 						},
 					},
 				},
+			},
+		},
+	}
+}
+
+func rulesSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Optional:    true,
+				Description: "The type of entity that the rule is applied on.",
+			},
+			"directive": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Optional:    true,
+				Description: "The type of rule which can be either allow or deny.",
+			},
+			"action": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Optional:    true,
+				Description: "The action that is being controlled via this rule. Only refer is supported as of now.",
+			},
+			"resource": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Optional:    true,
+				Description: "The actual entity on which the rule is applied. Resource should be the name of the entity or a wildcard which matches one or more entities.",
 			},
 		},
 	}

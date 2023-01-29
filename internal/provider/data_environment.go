@@ -9,7 +9,7 @@ import (
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 )
 
-func datasourceEnvironment() *schema.Resource {
+func dataSourceEnvironment() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: datasourceEnvironmentRead,
 		Schema: map[string]*schema.Schema{
@@ -62,7 +62,7 @@ func datasourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	if err = d.Set(utils.TerraformPipelines, flattenPipelines(response.Pipelines)); err != nil {
-		return diag.Errorf("setting '%s' errored with %v", err, utils.TerraformPipelines)
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformPipelines)
 	}
 
 	flattenedEnvVars, err := utils.MapSlice(response.EnvVars)
@@ -73,7 +73,7 @@ func datasourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	if err = d.Set(utils.TerraformEnvVar, flattenedEnvVars); err != nil {
-		return diag.Errorf("setting '%s' errored with %v", err, utils.TerraformEnvVar)
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformEnvVar)
 	}
 
 	d.SetId(id)

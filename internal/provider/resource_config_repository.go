@@ -116,7 +116,7 @@ func resourceConfigRepoRead(ctx context.Context, d *schema.ResourceData, meta in
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
-		return diag.Errorf("setting etag errored with %v", err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
 	return nil
@@ -183,8 +183,8 @@ func resourceConfigRepoDelete(ctx context.Context, d *schema.ResourceData, meta 
 	return nil
 }
 
-func getRules(configs interface{}) ([]map[string]interface{}, error) {
-	var rules []map[string]interface{}
+func getRules(configs interface{}) ([]map[string]string, error) {
+	var rules []map[string]string
 	if err := mapstructure.Decode(configs, &rules); err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}

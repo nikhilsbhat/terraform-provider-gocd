@@ -105,7 +105,7 @@ func resourceClusterProfileRead(ctx context.Context, d *schema.ResourceData, met
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
-		return diag.Errorf("setting etag errored with %v", err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
 	return nil

@@ -9,7 +9,7 @@ import (
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 )
 
-func datasourceClusterProfile() *schema.Resource {
+func dataSourceClusterProfile() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: datasourceClusterProfileRead,
 		Schema: map[string]*schema.Schema{
@@ -67,11 +67,11 @@ func datasourceClusterProfileRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	if err = d.Set(utils.TerraformPluginID, response.PluginID); err != nil {
-		return diag.Errorf("setting '%s' errored with %v", err, utils.TerraformPluginID)
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformPluginID)
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
-		return diag.Errorf("setting etag errored with %v", err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
 	flattenedProperties, err := utils.MapSlice(response.Properties)
@@ -82,7 +82,7 @@ func datasourceClusterProfileRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	if err = d.Set(utils.TerraformProperties, flattenedProperties); err != nil {
-		return diag.Errorf("setting '%s' errored with %v", err, utils.TerraformProperties)
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformProperties)
 	}
 
 	d.SetId(id)

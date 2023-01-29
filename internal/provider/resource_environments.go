@@ -100,7 +100,7 @@ func resourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta i
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
-		return diag.Errorf("setting etag errored with %v", err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
 	return nil

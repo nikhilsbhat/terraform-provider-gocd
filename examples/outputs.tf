@@ -26,3 +26,7 @@ output "sample_ec2" {
 output "yaml_plugin_settings" {
   value = data.gocd_plugin_setting.yaml_plugin_settings.configuration
 }
+
+output "sample_kube_secret_config" {
+  value = data.gocd_secret_config.sample_kube_secret_config
+}

@@ -9,7 +9,7 @@ import (
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 )
 
-func datasourceElasticAgentProfile() *schema.Resource {
+func dataSourceElasticAgentProfile() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: datasourceElasticAgentProfileRead,
 		Schema: map[string]*schema.Schema{
@@ -67,7 +67,7 @@ func datasourceElasticAgentProfileRead(ctx context.Context, d *schema.ResourceDa
 	}
 
 	if err = d.Set(utils.TerraformResourceClusterProfileID, response.ClusterProfileID); err != nil {
-		return diag.Errorf("setting '%s' errored with %v", err, utils.TerraformResourceClusterProfileID)
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceClusterProfileID)
 	}
 
 	flattenedProperties, err := utils.MapSlice(response.Properties)
@@ -78,7 +78,7 @@ func datasourceElasticAgentProfileRead(ctx context.Context, d *schema.ResourceDa
 	}
 
 	if err = d.Set(utils.TerraformProperties, flattenedProperties); err != nil {
-		return diag.Errorf("setting '%s' errored with %v", err, utils.TerraformProperties)
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformProperties)
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {

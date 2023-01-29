@@ -9,49 +9,57 @@ import (
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 )
 
-func dataSourceAuthConfig() *schema.Resource {
+func dataSourceSecretConfig() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: datasourceAuthConfigRead,
+		ReadContext: dataSourceSecretConfigRead,
 		Schema: map[string]*schema.Schema{
 			"profile_id": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Computed:    false,
 				ForceNew:    true,
-				Description: "The identifier of the elastic agent profile.",
+				Description: "The identifier of the secret config.",
 			},
 			"plugin_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
 				Required:    false,
-				Description: "The plugin identifier of the cluster profile.",
+				Description: "The identifier of the plugin to which current secret config belongs.",
 			},
-			"allow_only_known_users_to_login": {
-				Type:        schema.TypeBool,
+			"description": {
+				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
 				Required:    false,
-				Description: "Allow only those users to login who have explicitly been added by an administrator.",
+				Description: "The description for this secret config.",
 			},
 			"properties": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Optional:    true,
-				Description: "the list of configuration properties that represent the configuration of this profile.",
+				Description: "The list of configuration properties that represent the configuration of this secret config.",
 				Elem:        propertiesSchemaData(),
+			},
+			"rules": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Description: "The list of rules, which allows restricting the usage of the secret config. " +
+					"Referring to the secret config from other parts of configuration is denied by default, " +
+					"an explicit rule should be added to allow a specific resource to refer the secret config.",
+				Elem: rulesSchema(),
 			},
 			"etag": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
-				Description: "Etag used to track the authorisation configuration.",
+				Description: "Etag used to track the secret config",
 			},
 		},
 	}
 }
 
-func datasourceAuthConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceSecretConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -68,17 +76,17 @@ func datasourceAuthConfigRead(ctx context.Context, d *schema.ResourceData, meta 
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
 
-	response, err := defaultConfig.GetAuthConfig(profileID)
+	response, err := defaultConfig.GetSecretConfig(profileID)
 	if err != nil {
-		return diag.Errorf("getting authorization configuration %s errored with: %v", profileID, err)
+		return diag.Errorf("getting secret config %s errored with: %v", profileID, err)
 	}
 
 	if err = d.Set(utils.TerraformPluginID, response.PluginID); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformPluginID)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformPluginID, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceAllowKnownUser, response.AllowOnlyKnownUsers); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAllowKnownUser)
+	if err = d.Set(utils.TerraformResourceDescription, response.Description); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceDescription, err)
 	}
 
 	flattenedProperties, err := utils.MapSlice(response.Properties)
@@ -89,7 +97,11 @@ func datasourceAuthConfigRead(ctx context.Context, d *schema.ResourceData, meta 
 	}
 
 	if err = d.Set(utils.TerraformProperties, flattenedProperties); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformProperties)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformProperties, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceRules, response.Rules); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceRules, err)
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {

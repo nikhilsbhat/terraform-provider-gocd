@@ -38,11 +38,11 @@ func dataSourceConfigRepositoryRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if err = d.Set(utils.TerraformPluginID, response.PluginID); err != nil {
-		return diag.Errorf("setting pluginID errored with %v", err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformPluginID, err)
 	}
 
 	if err = d.Set(utils.TerraformResourceMaterial, flattenMaterial(response.Material)); err != nil {
-		return diag.Errorf("setting material errored with %v", err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceMaterial, err)
 	}
 
 	flattenedConfiguration, err := utils.MapSlice(response.Configuration)
@@ -53,15 +53,15 @@ func dataSourceConfigRepositoryRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	if err = d.Set(utils.TerraformResourceConfiguration, flattenedConfiguration); err != nil {
-		return diag.Errorf("setting plugin configurations errored with %v", err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourcePluginConfiguration, err)
 	}
 
 	if err = d.Set(utils.TerraformResourceRules, response.Rules); err != nil {
-		return diag.Errorf("setting rules errored with %v", err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceRules, err)
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
-		return diag.Errorf("setting etag errored with %v", err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
 	d.SetId(id)

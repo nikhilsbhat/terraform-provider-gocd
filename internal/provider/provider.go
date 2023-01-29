@@ -75,15 +75,17 @@ func Provider() *schema.Provider {
 			"gocd_config_repository":     resourceConfigRepository(),
 			"gocd_environment":           resourceEnvironment(),
 			"gocd_encrypt_value":         resourceEncryptValue(),
+			"gocd_secret_config":         resourceSecretConfig(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
 			"gocd_plugin_setting":        dataSourcePluginsSetting(),
-			"gocd_auth_config":           datasourceAuthConfig(),
-			"gocd_cluster_profile":       datasourceClusterProfile(),
-			"gocd_elastic_agent_profile": datasourceElasticAgentProfile(),
+			"gocd_auth_config":           dataSourceAuthConfig(),
+			"gocd_cluster_profile":       dataSourceClusterProfile(),
+			"gocd_elastic_agent_profile": dataSourceElasticAgentProfile(),
 			"gocd_config_repository":     dataSourceConfigRepository(),
-			"gocd_environment":           datasourceEnvironment(),
+			"gocd_environment":           dataSourceEnvironment(),
+			"gocd_secret_config":         dataSourceSecretConfig(),
 		},
 
 		ConfigureContextFunc: client.GetGoCDClient,
