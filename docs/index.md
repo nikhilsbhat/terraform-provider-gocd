@@ -23,7 +23,8 @@ provider "gocd" {
 
 ### Optional
 
-- `base_url` (String) base url of GoCD server, which this terraform provider can interact with
+- `auth_token` (String) bearer-token to be used while connecting with GoCD (API: https://api.gocd.org/current/#access-tokens, UI: https://docs.gocd.org/current/configuration/access_tokens.html) cannot co-exist with password based auth.
+- `base_url` (String) base url of GoCD server, with which this terraform provider will with (https://gocd.myself.com/go)
 - `ca_file` (String) CA file contents, to be used while connecting to GoCD server when CA based auth is enabled
 - `loglevel` (String) loglevel to be set for the api calls made to GoCD
 - `password` (String) password to be used while connecting with GoCD

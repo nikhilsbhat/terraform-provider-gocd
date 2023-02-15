@@ -10,11 +10,12 @@ import (
 
 func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	clientCfg := struct {
-		url      string
-		username string
-		password string
-		loglevel string
-		ca       []byte
+		url         string
+		username    string
+		password    string
+		bearerToken string
+		loglevel    string
+		ca          []byte
 	}{}
 
 	if baseURL := d.Get("base_url").(string); len(baseURL) == 0 {
@@ -35,6 +36,12 @@ func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, di
 		clientCfg.password = password
 	}
 
+	if authToken, ok := d.GetOk("auth_token"); !ok {
+		diag.Errorf("'auth_token' was not set")
+	} else {
+		clientCfg.bearerToken = authToken.(string)
+	}
+
 	if caFileContent := d.Get("ca_file").(string); len(caFileContent) == 0 {
 		diag.Errorf("'ca_file' was not set")
 	} else {
@@ -47,7 +54,13 @@ func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, di
 		clientCfg.loglevel = loglevel
 	}
 
-	goCDClient := gocd.NewClient(clientCfg.url, clientCfg.username, clientCfg.password, clientCfg.loglevel, clientCfg.ca)
+	gocdAuth := gocd.Auth{
+		UserName:    clientCfg.username,
+		Password:    clientCfg.password,
+		BearerToken: clientCfg.bearerToken,
+	}
+
+	goCDClient := gocd.NewClient(clientCfg.url, gocdAuth, clientCfg.loglevel, clientCfg.ca)
 
 	return goCDClient, nil
 }

@@ -31,7 +31,7 @@ func Provider() *schema.Provider {
 				ForceNew:    true,
 				Computed:    false,
 				DefaultFunc: schema.EnvDefaultFunc("GOCD_BASE_URL", "www.gocd.com"),
-				Description: "base url of GoCD server, which this terraform provider can interact with",
+				Description: "base url of GoCD server, with which this terraform provider will with (https://gocd.myself.com/go)",
 			},
 			"ca_file": {
 				Type:        schema.TypeString,
@@ -51,11 +51,21 @@ func Provider() *schema.Provider {
 			},
 			"password": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				ForceNew:    true,
 				Computed:    false,
 				DefaultFunc: schema.EnvDefaultFunc("GOCD_PASSWORD", "password"),
 				Description: "password to be used while connecting with GoCD",
+			},
+			"auth_token": {
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				Computed:      false,
+				DefaultFunc:   schema.EnvDefaultFunc("GOCD_AUTH_TOKEN", nil),
+				ConflictsWith: []string{"password"},
+				Description: "bearer-token to be used while connecting with GoCD (API: https://api.gocd.org/current/#access-tokens, " +
+					"UI: https://docs.gocd.org/current/configuration/access_tokens.html) cannot co-exist with password based auth.",
 			},
 			"loglevel": {
 				Type:        schema.TypeString,

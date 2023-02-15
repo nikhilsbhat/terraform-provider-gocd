@@ -28,5 +28,5 @@ output "yaml_plugin_settings" {
 }
 
 output "sample_kube_secret_config" {
-  value = data.gocd_secret_config.sample_kube_secret_config
+  value = data.gocd_secret_config.sample_kube_secret_config.plugin_id
 }
