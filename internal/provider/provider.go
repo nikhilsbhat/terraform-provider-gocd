@@ -35,7 +35,7 @@ func Provider() *schema.Provider {
 			},
 			"ca_file": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				ForceNew:    true,
 				Computed:    false,
 				DefaultFunc: schema.EnvDefaultFunc("GOCD_CAFILE_CONTENT", nil),
