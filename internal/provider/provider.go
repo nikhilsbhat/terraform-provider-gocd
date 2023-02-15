@@ -38,7 +38,7 @@ func Provider() *schema.Provider {
 				Required:    true,
 				ForceNew:    true,
 				Computed:    false,
-				DefaultFunc: schema.EnvDefaultFunc("GOCD_CAFILE_CONTENT", "some_ca_context"),
+				DefaultFunc: schema.EnvDefaultFunc("GOCD_CAFILE_CONTENT", nil),
 				Description: "CA file contents, to be used while connecting to GoCD server when CA based auth is enabled",
 			},
 			"username": {
