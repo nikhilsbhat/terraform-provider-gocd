@@ -62,7 +62,7 @@ func Provider() *schema.Provider {
 				Required:    true,
 				ForceNew:    true,
 				Computed:    false,
-				DefaultFunc: schema.EnvDefaultFunc("GOCD_PASSWORD", "password"),
+				DefaultFunc: schema.EnvDefaultFunc("GOCD_LOGLEVEL", "info"),
 				Description: "loglevel to be set for the api calls made to GoCD",
 			},
 		},
