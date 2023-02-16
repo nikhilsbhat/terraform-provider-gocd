@@ -11,14 +11,14 @@ func configRepoSchema() map[string]*schema.Schema {
 			Required:    true,
 			Computed:    false,
 			ForceNew:    true,
-			Description: "The identifier of the elastic agent profile.",
+			Description: "The identifier of the config repository.",
 		},
 		"plugin_id": {
 			Type:        schema.TypeString,
 			Computed:    true,
 			Optional:    true,
 			Required:    false,
-			Description: "The plugin identifier of the cluster profile.",
+			Description: "The name of the config repo plugin.",
 		},
 		"material": {
 			Type:        schema.TypeSet,
@@ -89,14 +89,14 @@ func configRepoSchema() map[string]*schema.Schema {
 			Type:        schema.TypeList,
 			Computed:    true,
 			Optional:    true,
-			Description: "the list of configuration properties that represent the configuration of this profile.",
+			Description: "The list of properties (key-value pairs) to be provided for using the plugin.",
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
 					"key": {
 						Type:        schema.TypeString,
 						Optional:    true,
 						Computed:    true,
-						Description: "the name of the property key.",
+						Description: "The name of the property key.",
 					},
 					"value": {
 						Type:        schema.TypeString,
@@ -130,7 +130,7 @@ func configRepoSchema() map[string]*schema.Schema {
 			Type:        schema.TypeString,
 			Computed:    true,
 			Optional:    true,
-			Description: "Etag used to track the plugin settings",
+			Description: "Etag used to track the config repository.",
 		},
 	}
 }

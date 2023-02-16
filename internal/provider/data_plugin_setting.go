@@ -18,7 +18,7 @@ func dataSourcePluginsSetting() *schema.Resource {
 				Computed:    true,
 				Optional:    true,
 				Required:    false,
-				Description: "The plugin identifier of the cluster profile.",
+				Description: "The unique identifier of the plugin.",
 			},
 			"configuration": {
 				Type:        schema.TypeList,
@@ -31,7 +31,7 @@ func dataSourcePluginsSetting() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
-				Description: "Etag used to track the cluster profile",
+				Description: "Etag used to track the plugin settings.",
 			},
 		},
 	}

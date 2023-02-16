@@ -39,7 +39,7 @@ func resourcePluginsSetting() *schema.Resource {
 				Required:    true,
 				Computed:    false,
 				ForceNew:    true,
-				Description: "id of the GoCD plugin to which the settings to be applied",
+				Description: "ID of the GoCD plugin to which the settings to be applied",
 			},
 			"plugin_configurations": {
 				Type:        schema.TypeSet,
@@ -52,7 +52,7 @@ func resourcePluginsSetting() *schema.Resource {
 							Type:        schema.TypeString,
 							Required:    true,
 							Computed:    false,
-							Description: "the name of the property key.",
+							Description: "The name of the property key.",
 						},
 						"value": {
 							Type:        schema.TypeString,

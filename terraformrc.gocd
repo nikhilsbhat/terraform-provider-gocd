@@ -1,0 +1,10 @@
+provider_installation {
+  filesystem_mirror {
+    path    = "local/path/to/terraform-providers"
+    include = ["registry.terraform.io/hashicorp/gocd"]
+  }
+
+  direct {
+    exclude = ["registry.terraform.io/hashicorp/gocd"]
+  }
+}

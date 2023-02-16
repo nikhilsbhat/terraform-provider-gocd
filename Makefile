@@ -49,6 +49,9 @@ generate.mock: ## generates mocks for the selected source packages.
 test: ## runs test cases
 	@time go test $(TEST_FILES) -mod=vendor -coverprofile cover.out && go tool cover -html=cover.out -o cover.html && open cover.html
 
+copy.terraformrc: ## copies terraformrc to user's home directory that helps in local development of the provider.
+	cp terraformrc.sample ${HOME}/terraformrc
+
 create.newversion.tfregistry: build.local ## Sets up the local terraform registry with the version specified.
 	@mkdir -p ~/terraform-providers/registry.terraform.io/hashicorp/gocd/$(VERSION)/darwin_arm64/
 

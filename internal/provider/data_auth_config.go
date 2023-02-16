@@ -18,14 +18,14 @@ func dataSourceAuthConfig() *schema.Resource {
 				Required:    true,
 				Computed:    false,
 				ForceNew:    true,
-				Description: "The identifier of the elastic agent profile.",
+				Description: "The identifier of the authorization configuration.",
 			},
 			"plugin_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
 				Required:    false,
-				Description: "The plugin identifier of the cluster profile.",
+				Description: "The plugin identifier of the authorization plugin.",
 			},
 			"allow_only_known_users_to_login": {
 				Type:        schema.TypeBool,
@@ -38,14 +38,14 @@ func dataSourceAuthConfig() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Optional:    true,
-				Description: "the list of configuration properties that represent the configuration of this profile.",
+				Description: "The list of configuration properties that represent the configuration of this authorization configuration.",
 				Elem:        propertiesSchemaData(),
 			},
 			"etag": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Optional:    true,
-				Description: "Etag used to track the authorisation configuration.",
+				Description: "Etag used to track the authorization configuration.",
 			},
 		},
 	}
