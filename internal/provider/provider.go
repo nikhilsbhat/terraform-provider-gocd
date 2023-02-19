@@ -46,7 +46,7 @@ func Provider() *schema.Provider {
 				Required:    true,
 				ForceNew:    true,
 				Computed:    false,
-				DefaultFunc: schema.EnvDefaultFunc("GOCD_USERNAME", "username"),
+				DefaultFunc: schema.EnvDefaultFunc("GOCD_USERNAME", nil),
 				Description: "username to be used while connecting with GoCD",
 			},
 			"password": {
@@ -54,7 +54,7 @@ func Provider() *schema.Provider {
 				Optional:    true,
 				ForceNew:    true,
 				Computed:    false,
-				DefaultFunc: schema.EnvDefaultFunc("GOCD_PASSWORD", "password"),
+				DefaultFunc: schema.EnvDefaultFunc("GOCD_PASSWORD", nil),
 				Description: "password to be used while connecting with GoCD",
 			},
 			"auth_token": {
