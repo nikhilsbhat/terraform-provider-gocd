@@ -35,10 +35,10 @@ func Provider() *schema.Provider {
 			},
 			"ca_file": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				ForceNew:    true,
 				Computed:    false,
-				DefaultFunc: schema.EnvDefaultFunc("GOCD_CAFILE_CONTENT", "some_ca_context"),
+				DefaultFunc: schema.EnvDefaultFunc("GOCD_CAFILE_CONTENT", nil),
 				Description: "CA file contents, to be used while connecting to GoCD server when CA based auth is enabled",
 			},
 			"username": {
@@ -72,7 +72,7 @@ func Provider() *schema.Provider {
 				Required:    true,
 				ForceNew:    true,
 				Computed:    false,
-				DefaultFunc: schema.EnvDefaultFunc("GOCD_PASSWORD", "password"),
+				DefaultFunc: schema.EnvDefaultFunc("GOCD_LOGLEVEL", "info"),
 				Description: "loglevel to be set for the api calls made to GoCD",
 			},
 		},
