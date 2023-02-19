@@ -8,5 +8,5 @@ resource "gocd_auth_config" "password_file_config" {
 }
 
 data "gocd_auth_config" "password_file_config" {
-  profile_id = "admin_new"
+  profile_id = gocd_auth_config.password_file_config.id
 }

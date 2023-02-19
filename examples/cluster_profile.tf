@@ -69,5 +69,5 @@ resource "gocd_cluster_profile" "ec2_cluster_profile" {
 }
 
 data "gocd_cluster_profile" "ec2_cluster_profile" {
-  profile_id = "ec2_cluster_profile"
+  profile_id = gocd_cluster_profile.ec2_cluster_profile.id
 }

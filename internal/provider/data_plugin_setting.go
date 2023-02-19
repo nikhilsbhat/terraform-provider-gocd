@@ -43,13 +43,8 @@ func dataSourcePluginsSettingRead(ctx context.Context, d *schema.ResourceData, m
 	id := d.Id()
 
 	if len(id) == 0 {
-		newID, err := utils.GetRandomID()
-		if err != nil {
-			d.SetId("")
-
-			return diag.Errorf("errored while fetching randomID %v", err)
-		}
-		id = newID
+		resourceID := utils.String(d.Get(utils.TerraformPluginID))
+		id = resourceID
 	}
 
 	pluginID := utils.String(d.Get(utils.TerraformPluginID))

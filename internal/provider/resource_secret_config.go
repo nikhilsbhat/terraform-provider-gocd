@@ -82,13 +82,8 @@ func resourceSecretConfigCreate(ctx context.Context, data *schema.ResourceData, 
 	id := data.Id()
 
 	if len(id) == 0 {
-		newID, err := utils.GetRandomID()
-		if err != nil {
-			data.SetId("")
-
-			return diag.Errorf("errored while fetching randomID %v", err)
-		}
-		id = newID
+		resourceID := utils.String(data.Get(utils.TerraformResourceProfileID))
+		id = resourceID
 	}
 
 	rules, err := getRules(data.Get(utils.TerraformResourceRules))

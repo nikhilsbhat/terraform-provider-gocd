@@ -11,7 +11,7 @@ resource "gocd_config_repository" "sample_config_repo" {
   }
   configuration {
     key       = "url"
-    value     = "https://github.com/sample/example.git"
+    value     = "https://github.com/config-repo/gocd-json-config-example.git"
     is_secure = false
   }
   material {
@@ -35,5 +35,5 @@ resource "gocd_config_repository" "sample_config_repo" {
 }
 
 data "gocd_config_repository" "sample_config_repo" {
-  profile_id = "sample_config_repo"
+  profile_id = gocd_config_repository.sample_config_repo.id
 }
