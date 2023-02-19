@@ -10,7 +10,7 @@ terraform {
 provider "gocd" {
   base_url   = "http://localhost:8153/go"
   username   = "admin"
-  password   = "admin"
+//  password   = "admin"
   auth_token = "d8fccbc997d04e917b1490af8e7bf46290ab8c99"
   loglevel   = "debug"
 }

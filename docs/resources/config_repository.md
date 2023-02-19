@@ -19,8 +19,8 @@ description: |-
 
 - `configuration` (Block Set, Min: 1) the list of configuration properties that represent the configuration of this profile. (see [below for nested schema](#nestedblock--configuration))
 - `material` (Block Set, Min: 1) The material to be used by the config repo. (see [below for nested schema](#nestedblock--material))
-- `plugin_id` (String) The plugin identifier of the cluster profile.
-- `profile_id` (String) The identifier of the elastic agent profile.
+- `plugin_id` (String) The name of the config repo plugin.
+- `profile_id` (String) The identifier of the config repository.
 
 ### Optional
 
@@ -28,7 +28,7 @@ description: |-
 
 ### Read-Only
 
-- `etag` (String) Etag used to track the plugin settings
+- `etag` (String) Etag used to track the config repository.
 - `id` (String) The ID of this resource.
 
 <a id="nestedblock--configuration"></a>

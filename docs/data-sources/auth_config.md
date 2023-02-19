@@ -17,14 +17,14 @@ description: |-
 
 ### Required
 
-- `profile_id` (String) The identifier of the elastic agent profile.
+- `profile_id` (String) The identifier of the authorization configuration.
 
 ### Optional
 
 - `allow_only_known_users_to_login` (Boolean) Allow only those users to login who have explicitly been added by an administrator.
-- `etag` (String) Etag used to track the authorisation configuration.
-- `plugin_id` (String) The plugin identifier of the cluster profile.
-- `properties` (Block List) the list of configuration properties that represent the configuration of this profile. (see [below for nested schema](#nestedblock--properties))
+- `etag` (String) Etag used to track the authorization configuration.
+- `plugin_id` (String) The plugin identifier of the authorization plugin.
+- `properties` (Block List) The list of configuration properties that represent the configuration of this authorization configuration. (see [below for nested schema](#nestedblock--properties))
 
 ### Read-Only
 

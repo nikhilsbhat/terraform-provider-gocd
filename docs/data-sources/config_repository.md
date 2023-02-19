@@ -17,13 +17,13 @@ description: |-
 
 ### Required
 
-- `profile_id` (String) The identifier of the elastic agent profile.
+- `profile_id` (String) The identifier of the config repository.
 
 ### Optional
 
-- `configuration` (Block List) the list of configuration properties that represent the configuration of this profile. (see [below for nested schema](#nestedblock--configuration))
-- `etag` (String) Etag used to track the plugin settings
-- `plugin_id` (String) The plugin identifier of the cluster profile.
+- `configuration` (Block List) The list of properties (key-value pairs) to be provided for using the plugin. (see [below for nested schema](#nestedblock--configuration))
+- `etag` (String) Etag used to track the config repository.
+- `plugin_id` (String) The name of the config repo plugin.
 
 ### Read-Only
 
@@ -38,7 +38,7 @@ Optional:
 
 - `encrypted_value` (String) The encrypted value of the property
 - `is_secure` (Boolean) Specify whether the given property is secure or not. If true and encrypted_value is not specified, GoCD will store the value in encrypted format.
-- `key` (String) the name of the property key.
+- `key` (String) The name of the property key.
 - `value` (String) The value of the property
 
 

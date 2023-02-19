@@ -18,7 +18,7 @@ description: |-
 ### Required
 
 - `plugin_configurations` (Block Set, Min: 1) list of configurations to be applied to GoCD plugin (see [below for nested schema](#nestedblock--plugin_configurations))
-- `plugin_id` (String) id of the GoCD plugin to which the settings to be applied
+- `plugin_id` (String) ID of the GoCD plugin to which the settings to be applied
 
 ### Read-Only
 
@@ -30,7 +30,7 @@ description: |-
 
 Required:
 
-- `key` (String) the name of the property key.
+- `key` (String) The name of the property key.
 
 Optional:
 

@@ -18,8 +18,8 @@ description: |-
 ### Optional
 
 - `configuration` (Block List) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--configuration))
-- `etag` (String) Etag used to track the cluster profile
-- `plugin_id` (String) The plugin identifier of the cluster profile.
+- `etag` (String) Etag used to track the plugin settings.
+- `plugin_id` (String) The unique identifier of the plugin.
 
 ### Read-Only
 
