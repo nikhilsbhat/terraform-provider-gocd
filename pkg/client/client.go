@@ -2,10 +2,12 @@ package client
 
 import (
 	"context"
+	"errors"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/nikhilsbhat/gocd-sdk-go"
+	goErr "github.com/nikhilsbhat/gocd-sdk-go/pkg/errors"
 )
 
 func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
@@ -15,6 +17,7 @@ func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, di
 		password    string
 		bearerToken string
 		loglevel    string
+		skipCheck   bool
 		ca          []byte
 	}{}
 
@@ -42,6 +45,12 @@ func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, di
 		clientCfg.bearerToken = authToken.(string)
 	}
 
+	if skipCheck, ok := d.GetOk("skip_check"); !ok {
+		diag.Errorf("'skip_check' was not set")
+	} else {
+		clientCfg.skipCheck = skipCheck.(bool)
+	}
+
 	if caFileContent := d.Get("ca_file").(string); len(caFileContent) == 0 {
 		diag.Errorf("'ca_file' was not set")
 	} else {
@@ -54,13 +63,21 @@ func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, di
 		clientCfg.loglevel = loglevel
 	}
 
-	gocdAuth := gocd.Auth{
+	goCDAuth := gocd.Auth{
 		UserName:    clientCfg.username,
 		Password:    clientCfg.password,
 		BearerToken: clientCfg.bearerToken,
 	}
 
-	goCDClient := gocd.NewClient(clientCfg.url, gocdAuth, clientCfg.loglevel, clientCfg.ca)
+	goCDClient := gocd.NewClient(clientCfg.url, goCDAuth, clientCfg.loglevel, clientCfg.ca)
+
+	if !clientCfg.skipCheck {
+		if _, err := goCDClient.GetServerHealth(); err != nil {
+			if !errors.Is(err, goErr.MarshalError{}) {
+				return nil, diag.Errorf("errored while connecting to server\nerror: %v\ncheck the baseURL and authorization config before rerunning plan again", err)
+			}
+		}
+	}
 
 	return goCDClient, nil
 }

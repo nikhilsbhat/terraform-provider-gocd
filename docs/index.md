@@ -32,3 +32,4 @@ provider "gocd" {
 - `ca_file` (String) CA file contents, to be used while connecting to GoCD server when CA based auth is enabled
 - `loglevel` (String) loglevel to be set for the api calls made to GoCD
 - `password` (String) password to be used while connecting with GoCD
+- `skip_check` (Boolean) setting this to false will skip a validation done during client creation, this helps by avoiding errors being thrown from all resource/data block defined

@@ -205,8 +205,8 @@ github.com/mitchellh/reflectwalk v1.0.0/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx
 github.com/mitchellh/reflectwalk v1.0.2 h1:G2LzWKi524PWgd3mLHV8Y5k7s6XUvT0Gef6zxSIeXaQ=
 github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx0jmZXqmk4esnw=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
-github.com/nikhilsbhat/gocd-sdk-go v0.0.9-0.20230215164616-e5498f6f001a h1:GoDypOvoIeWtmjeLM/GyXKJWC/DSbeir9z/e/pKlFkc=
-github.com/nikhilsbhat/gocd-sdk-go v0.0.9-0.20230215164616-e5498f6f001a/go.mod h1:3XwSMe/nFH/I0Kt2+ToKKWFyD6yvJb4HaoP0dBHytY4=
+github.com/nikhilsbhat/gocd-sdk-go v0.0.10-0.20230221063610-c7aae78b564b h1:TjndaPTTJof+0PbIabNy2YekPp01eqROfGGPJhD9UjM=
+github.com/nikhilsbhat/gocd-sdk-go v0.0.10-0.20230221063610-c7aae78b564b/go.mod h1:3XwSMe/nFH/I0Kt2+ToKKWFyD6yvJb4HaoP0dBHytY4=
 github.com/nsf/jsondiff v0.0.0-20200515183724-f29ed568f4ce h1:RPclfga2SEJmgMmz2k+Mg7cowZ8yv4Trqw9UsJby758=
 github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
 github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=

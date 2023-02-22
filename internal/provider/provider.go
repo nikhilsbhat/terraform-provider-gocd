@@ -75,6 +75,15 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("GOCD_LOGLEVEL", "info"),
 				Description: "loglevel to be set for the api calls made to GoCD",
 			},
+			"skip_check": {
+				Type:        schema.TypeBool,
+				Required:    true,
+				ForceNew:    true,
+				Computed:    false,
+				DefaultFunc: schema.EnvDefaultFunc("GOCD_SKIP_CHECK", "false"),
+				Description: "setting this to false will skip a validation done during client creation, this helps by avoiding " +
+					"errors being thrown from all resource/data block defined",
+			},
 		},
 
 		ResourcesMap: map[string]*schema.Resource{

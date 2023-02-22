@@ -7,7 +7,7 @@ require (
 	github.com/hashicorp/terraform-plugin-docs v0.13.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.24.1
 	github.com/mitchellh/mapstructure v1.5.0
-	github.com/nikhilsbhat/gocd-sdk-go v0.0.9-0.20230215164616-e5498f6f001a
+	github.com/nikhilsbhat/gocd-sdk-go v0.0.10-0.20230221063610-c7aae78b564b
 )
 
 require (
