@@ -60,7 +60,7 @@ upload.newversion.provider: create.newversion.tfregistry ## Uploads the updated 
 	@cp terraform-provider-gocd_v$(VERSION) ~/terraform-providers/registry.terraform.io/hashicorp/gocd/$(VERSION)/darwin_arm64/
 
 generate.document:
-	@tfplugindocs generate examples/
+	tfplugindocs generate --website-source-dir templates/ --website-temp-dir templates-latest --examples-dir examples
 
 tflint:
 	@terraform fmt -write=false -check=true -diff=true examples/
