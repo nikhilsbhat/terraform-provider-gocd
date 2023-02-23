@@ -105,6 +105,7 @@ func Provider() *schema.Provider {
 			"gocd_config_repository":     dataSourceConfigRepository(),
 			"gocd_environment":           dataSourceEnvironment(),
 			"gocd_secret_config":         dataSourceSecretConfig(),
+			"gocd_plugin_info":           resourcePluginInfo(),
 		},
 
 		ConfigureContextFunc: client.GetGoCDClient,
