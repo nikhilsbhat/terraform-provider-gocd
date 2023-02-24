@@ -23,3 +23,7 @@ terraform.tfstate*
 templates-latest/
 
 /dist
+
+# dropping all test results
+cover.out
+cover.html
