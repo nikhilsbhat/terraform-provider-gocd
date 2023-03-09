@@ -72,8 +72,8 @@ func datasourceElasticAgentProfileRead(ctx context.Context, d *schema.ResourceDa
 		return diag.Errorf("errored while flattening Properties obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformProperties, flattenedProperties); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformProperties)
+	if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceProperties)
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {

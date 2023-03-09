@@ -59,7 +59,7 @@ func resourceElasticAgentProfileCreate(ctx context.Context, d *schema.ResourceDa
 		cfg := gocd.CommonConfig{
 			ID:               utils.String(d.Get(utils.TerraformResourceProfileID)),
 			ClusterProfileID: utils.String(d.Get(utils.TerraformResourceClusterProfileID)),
-			Properties:       getPluginConfiguration(d.Get(utils.TerraformProperties)),
+			Properties:       getPluginConfiguration(d.Get(utils.TerraformResourceProperties)),
 		}
 
 		_, err := defaultConfig.CreateElasticAgentProfile(cfg)
@@ -94,8 +94,8 @@ func resourceElasticAgentProfileRead(ctx context.Context, d *schema.ResourceData
 func resourceElasticAgentProfileUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.HasChange(utils.TerraformProperties) {
-		oldCfg, newCfg := d.GetChange(utils.TerraformProperties)
+	if d.HasChange(utils.TerraformResourceProperties) {
+		oldCfg, newCfg := d.GetChange(utils.TerraformResourceProperties)
 		if !cmp.Equal(oldCfg, newCfg) {
 			cfg := gocd.CommonConfig{
 				ID:               utils.String(d.Get(utils.TerraformResourceProfileID)),

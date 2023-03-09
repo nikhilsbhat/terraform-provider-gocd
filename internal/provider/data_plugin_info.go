@@ -9,7 +9,7 @@ import (
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 )
 
-func resourcePluginInfo() *schema.Resource {
+func dataSourcePluginInfo() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: datasourcePluginInfoRead,
 		Schema: map[string]*schema.Schema{
@@ -63,26 +63,26 @@ func datasourcePluginInfoRead(ctx context.Context, d *schema.ResourceData, meta 
 	id := d.Id()
 
 	if len(id) == 0 {
-		pluginID := utils.String(d.Get(utils.TerraformPluginID))
+		pluginID := utils.String(d.Get(utils.TerraformResourcePluginID))
 		id = pluginID
 	}
 
-	pluginID := utils.String(d.Get(utils.TerraformPluginID))
+	pluginID := utils.String(d.Get(utils.TerraformResourcePluginID))
 	response, err := defaultConfig.GetPluginInfo(pluginID)
 	if err != nil {
 		return diag.Errorf("getting plugin information of '%s' errored with: %v", pluginID, err)
 	}
 
-	if err = d.Set(utils.TerraformPluginLocation, response.PluginFileLocation); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformPluginLocation)
+	if err = d.Set(utils.TerraformResourcePluginLocation, response.PluginFileLocation); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginLocation)
 	}
 
-	if err = d.Set(utils.TerraformPluginBundled, response.BundledPlugin); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformPluginBundled)
+	if err = d.Set(utils.TerraformResourcePluginBundled, response.BundledPlugin); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginBundled)
 	}
 
-	if err = d.Set(utils.TerraformPluginStatus, flattenStatus(response)); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformPluginStatus)
+	if err = d.Set(utils.TerraformResourcePluginStatus, flattenStatus(response)); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginStatus)
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {

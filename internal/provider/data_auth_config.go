@@ -68,8 +68,8 @@ func datasourceAuthConfigRead(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("getting authorization configuration %s errored with: %v", profileID, err)
 	}
 
-	if err = d.Set(utils.TerraformPluginID, response.PluginID); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformPluginID)
+	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginID)
 	}
 
 	if err = d.Set(utils.TerraformResourceAllowKnownUser, response.AllowOnlyKnownUsers); err != nil {
@@ -83,8 +83,8 @@ func datasourceAuthConfigRead(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("errored while flattening Properties obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformProperties, flattenedProperties); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformProperties)
+	if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceProperties)
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {

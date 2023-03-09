@@ -54,7 +54,7 @@ func resourceEncryptValueCreate(ctx context.Context, d *schema.ResourceData, met
 		id = newID
 	}
 
-	encryptedValue, err := defaultConfig.EncryptText(utils.String(d.Get(utils.TerraformValue)))
+	encryptedValue, err := defaultConfig.EncryptText(utils.String(d.Get(utils.TerraformResourceValue)))
 	if err != nil {
 		return diag.Errorf("encrypting value errored with %v", err)
 	}

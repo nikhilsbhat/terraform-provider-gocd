@@ -7,5 +7,5 @@
 [![shields](https://img.shields.io/github/v/tag/nikhilsbhat/terraform-provider-gocd.svg)](https://github.com/nikhilsbhat/terraform-provider-gocd/tags)
 [![shields](https://img.shields.io/github/downloads/nikhilsbhat/terraform-provider-gocd/total.svg)](https://github.com/nikhilsbhat/terraform-provider-gocd/releases)
 
-Terraform provider for `GoCD` that helps in performing tasks on [GoCD](https://www.gocd.org/) server.
+[terraform](https://www.terraform.io/) provider for [`GoCD`](https://www.gocd.org/) that helps in performing tasks on GoCD server.
 

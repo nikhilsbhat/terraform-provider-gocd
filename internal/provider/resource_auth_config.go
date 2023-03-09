@@ -80,8 +80,8 @@ func resourceAuthConfigCreate(ctx context.Context, d *schema.ResourceData, meta 
 
 		cfg := gocd.CommonConfig{
 			ID:                  utils.String(d.Get(utils.TerraformResourceProfileID)),
-			PluginID:            utils.String(d.Get(utils.TerraformPluginID)),
-			Properties:          getPluginConfiguration(d.Get(utils.TerraformProperties)),
+			PluginID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
+			Properties:          getPluginConfiguration(d.Get(utils.TerraformResourceProperties)),
 			AllowOnlyKnownUsers: utils.Bool(d.Get(utils.TerraformResourceAllowKnownUser)),
 		}
 
@@ -117,12 +117,12 @@ func resourceAuthConfigRead(ctx context.Context, d *schema.ResourceData, meta in
 func resourceAuthConfigUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.HasChange(utils.TerraformProperties) {
-		oldCfg, newCfg := d.GetChange(utils.TerraformProperties)
+	if d.HasChange(utils.TerraformResourceProperties) {
+		oldCfg, newCfg := d.GetChange(utils.TerraformResourceProperties)
 		if !cmp.Equal(oldCfg, newCfg) {
 			cfg := gocd.CommonConfig{
 				ID:                  utils.String(d.Get(utils.TerraformResourceProfileID)),
-				PluginID:            utils.String(d.Get(utils.TerraformPluginID)),
+				PluginID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
 				Properties:          getPluginConfiguration(newCfg),
 				AllowOnlyKnownUsers: utils.Bool(d.Get(utils.TerraformResourceAllowKnownUser)),
 				ETAG:                utils.String(d.Get(utils.TerraformResourceEtag)),

@@ -65,14 +65,14 @@ func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta
 		id = resourceID
 	}
 
-	envVars, err := getEnvironments(d.Get(utils.TerraformEnvVar))
+	envVars, err := getEnvironments(d.Get(utils.TerraformResourceEnvVar))
 	if err != nil {
 		return diag.Errorf("reading environment errored with %v", err)
 	}
 
 	cfg := gocd.Environment{
 		Name:      utils.String(d.Get(utils.TerraformResourceName)),
-		Pipelines: getPipelines(d.Get(utils.TerraformPipelines)),
+		Pipelines: getPipelines(d.Get(utils.TerraformResourcePipelines)),
 		EnvVars:   envVars,
 	}
 
@@ -104,7 +104,7 @@ func resourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta i
 func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.HasChange(utils.TerraformPipelines) || d.HasChange(utils.TerraformEnvVar) {
+	if d.HasChange(utils.TerraformResourcePipelines) || d.HasChange(utils.TerraformResourceEnvVar) {
 		changes, err := getEnvChanges(d)
 		if err != nil {
 			return diag.Errorf("fetching changes errored with %v", err)
@@ -174,8 +174,8 @@ func getPipelines(configs interface{}) []gocd.Pipeline {
 
 func getEnvChanges(d *schema.ResourceData) (environmentChanges, error) {
 	var changes environmentChanges
-	oldVars, newVars := d.GetChange(utils.TerraformEnvVar)
-	oldPipelines, newPipelines := d.GetChange(utils.TerraformPipelines)
+	oldVars, newVars := d.GetChange(utils.TerraformResourceEnvVar)
+	oldPipelines, newPipelines := d.GetChange(utils.TerraformResourcePipelines)
 
 	envVars, err := getEnvironments(oldVars)
 	if err != nil {

@@ -76,8 +76,8 @@ func resourceClusterProfileCreate(ctx context.Context, d *schema.ResourceData, m
 
 	cfg := gocd.CommonConfig{
 		ID:         utils.String(d.Get(utils.TerraformResourceProfileID)),
-		PluginID:   utils.String(d.Get(utils.TerraformPluginID)),
-		Properties: getPluginConfiguration(d.Get(utils.TerraformProperties)),
+		PluginID:   utils.String(d.Get(utils.TerraformResourcePluginID)),
+		Properties: getPluginConfiguration(d.Get(utils.TerraformResourceProperties)),
 	}
 
 	_, err := defaultConfig.CreateClusterProfile(cfg)
@@ -109,12 +109,12 @@ func resourceClusterProfileRead(ctx context.Context, d *schema.ResourceData, met
 func resourceClusterProfileUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.HasChange(utils.TerraformProperties) {
-		oldCfg, newCfg := d.GetChange(utils.TerraformProperties)
+	if d.HasChange(utils.TerraformResourceProperties) {
+		oldCfg, newCfg := d.GetChange(utils.TerraformResourceProperties)
 		if !cmp.Equal(oldCfg, newCfg) {
 			cfg := gocd.CommonConfig{
 				ID:         utils.String(d.Get(utils.TerraformResourceProfileID)),
-				PluginID:   utils.String(d.Get(utils.TerraformPluginID)),
+				PluginID:   utils.String(d.Get(utils.TerraformResourcePluginID)),
 				Properties: getPluginConfiguration(newCfg),
 				ETAG:       utils.String(d.Get(utils.TerraformResourceEtag)),
 			}

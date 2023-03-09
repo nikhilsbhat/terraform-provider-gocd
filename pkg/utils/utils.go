@@ -59,6 +59,21 @@ func MapSlice(value interface{}) ([]map[string]interface{}, error) {
 	return mp, nil
 }
 
+// Map returns array flattens the object passed to []map[string]interface{}
+// to simplify terraform attributes saving.
+func Map(value interface{}) (map[string]string, error) {
+	var mp map[string]string
+	j, err := json.Marshal(value)
+	if err != nil {
+		return nil, err
+	}
+	if err = json.Unmarshal(j, &mp); err != nil {
+		return nil, err
+	}
+
+	return mp, nil
+}
+
 // String returns string converted interface.
 func String(value interface{}) string {
 	return value.(string)

@@ -76,8 +76,8 @@ func dataSourceSecretConfigRead(ctx context.Context, d *schema.ResourceData, met
 		return diag.Errorf("getting secret config %s errored with: %v", profileID, err)
 	}
 
-	if err = d.Set(utils.TerraformPluginID, response.PluginID); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, utils.TerraformPluginID, err)
+	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourcePluginID, err)
 	}
 
 	if err = d.Set(utils.TerraformResourceDescription, response.Description); err != nil {
@@ -91,8 +91,8 @@ func dataSourceSecretConfigRead(ctx context.Context, d *schema.ResourceData, met
 		return diag.Errorf("errored while flattening Properties obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformProperties, flattenedProperties); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, utils.TerraformProperties, err)
+	if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceProperties, err)
 	}
 
 	if err = d.Set(utils.TerraformResourceRules, response.Rules); err != nil {

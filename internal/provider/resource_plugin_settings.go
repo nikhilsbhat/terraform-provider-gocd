@@ -92,12 +92,12 @@ func resourcePluginsSettingsCreate(ctx context.Context, d *schema.ResourceData, 
 	id := d.Id()
 
 	if len(id) == 0 {
-		resourceID := utils.String(d.Get(utils.TerraformPluginID))
+		resourceID := utils.String(d.Get(utils.TerraformResourcePluginID))
 		id = resourceID
 	}
 
 	pluginSettings := gocd.PluginSettings{
-		ID:            utils.String(d.Get(utils.TerraformPluginID)),
+		ID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
 		Configuration: getPluginConfiguration(d.Get(utils.TerraformResourcePluginConfiguration)),
 	}
 
@@ -114,7 +114,7 @@ func resourcePluginsSettingsCreate(ctx context.Context, d *schema.ResourceData, 
 func resourcePluginsSettingsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	response, err := defaultConfig.GetPluginSettings(utils.String(d.Get(utils.TerraformPluginID)))
+	response, err := defaultConfig.GetPluginSettings(utils.String(d.Get(utils.TerraformResourcePluginID)))
 	if err != nil {
 		return diag.Errorf("getting plugin configuration errored with: %v", err)
 	}
@@ -133,7 +133,7 @@ func resourcePluginsSettingsUpdate(ctx context.Context, d *schema.ResourceData, 
 		oldCfg, newCfg := d.GetChange(utils.TerraformResourcePluginConfiguration)
 		if !cmp.Equal(oldCfg, newCfg) {
 			pluginSettings := gocd.PluginSettings{
-				ID:            utils.String(d.Get(utils.TerraformPluginID)),
+				ID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
 				Configuration: getPluginConfiguration(newCfg),
 				ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
 			}
@@ -160,7 +160,7 @@ func resourcePluginsSettingsDelete(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	pluginSettings := gocd.PluginSettings{
-		ID:            utils.String(d.Get(utils.TerraformPluginID)),
+		ID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
 		Configuration: []gocd.PluginConfiguration{},
 		ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
 	}

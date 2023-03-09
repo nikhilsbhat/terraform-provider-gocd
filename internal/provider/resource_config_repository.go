@@ -86,7 +86,7 @@ func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta 
 
 	cfg := gocd.ConfigRepo{
 		ID:            utils.String(d.Get(utils.TerraformResourceProfileID)),
-		PluginID:      utils.String(d.Get(utils.TerraformPluginID)),
+		PluginID:      utils.String(d.Get(utils.TerraformResourcePluginID)),
 		Configuration: getPluginConfiguration(d.Get(utils.TerraformResourceConfiguration)),
 		Rules:         rules,
 		Material:      material,
@@ -122,7 +122,7 @@ func resourceConfigRepoUpdate(ctx context.Context, d *schema.ResourceData, meta 
 
 	if d.HasChange(utils.TerraformResourceMaterial) ||
 		d.HasChange(utils.TerraformResourceRules) {
-		oldCfg, newCfg := d.GetChange(utils.TerraformProperties)
+		oldCfg, newCfg := d.GetChange(utils.TerraformResourceProperties)
 
 		if cmp.Equal(oldCfg, newCfg) {
 			return nil
@@ -140,7 +140,7 @@ func resourceConfigRepoUpdate(ctx context.Context, d *schema.ResourceData, meta 
 
 		cfg := gocd.ConfigRepo{
 			ID:       utils.String(d.Get(utils.TerraformResourceProfileID)),
-			PluginID: utils.String(d.Get(utils.TerraformPluginID)),
+			PluginID: utils.String(d.Get(utils.TerraformResourcePluginID)),
 			Rules:    rules,
 			Material: material,
 			ETAG:     utils.String(d.Get(utils.TerraformResourceEtag)),

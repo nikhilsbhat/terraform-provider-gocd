@@ -56,8 +56,8 @@ func datasourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("getting environment %s errored with: %v", envName, err)
 	}
 
-	if err = d.Set(utils.TerraformPipelines, flattenPipelines(response.Pipelines)); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformPipelines)
+	if err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines)); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
 	}
 
 	flattenedEnvVars, err := utils.MapSlice(response.EnvVars)
@@ -67,8 +67,8 @@ func datasourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("errored while flattening environment variable obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformEnvVar, flattenedEnvVars); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformEnvVar)
+	if err = d.Set(utils.TerraformResourceEnvVar, flattenedEnvVars); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceEnvVar)
 	}
 
 	d.SetId(id)

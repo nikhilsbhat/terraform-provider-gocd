@@ -15,9 +15,9 @@ func dataSourcePluginsSetting() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"plugin_id": {
 				Type:        schema.TypeString,
-				Computed:    true,
-				Optional:    true,
-				Required:    false,
+				Required:    true,
+				ForceNew:    true,
+				Computed:    false,
 				Description: "The unique identifier of the plugin.",
 			},
 			"configuration": {
@@ -43,11 +43,11 @@ func dataSourcePluginsSettingRead(ctx context.Context, d *schema.ResourceData, m
 	id := d.Id()
 
 	if len(id) == 0 {
-		resourceID := utils.String(d.Get(utils.TerraformPluginID))
+		resourceID := utils.String(d.Get(utils.TerraformResourcePluginID))
 		id = resourceID
 	}
 
-	pluginID := utils.String(d.Get(utils.TerraformPluginID))
+	pluginID := utils.String(d.Get(utils.TerraformResourcePluginID))
 
 	response, err := defaultConfig.GetPluginSettings(pluginID)
 	if err != nil {

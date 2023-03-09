@@ -34,3 +34,7 @@ output "sample_kube_secret_config" {
 output "kubernetes_plugin" {
   value = data.gocd_plugin_info.kubernetes_plugin
 }
+
+output "sample_agent_config" {
+  value = data.gocd_agent_config.sample_agent.hostname
+}

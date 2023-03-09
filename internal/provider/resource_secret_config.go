@@ -93,9 +93,9 @@ func resourceSecretConfigCreate(ctx context.Context, data *schema.ResourceData, 
 
 	cfg := gocd.CommonConfig{
 		ID:          utils.String(data.Get(utils.TerraformResourceProfileID)),
-		PluginID:    utils.String(data.Get(utils.TerraformPluginID)),
+		PluginID:    utils.String(data.Get(utils.TerraformResourcePluginID)),
 		Description: utils.String(data.Get(utils.TerraformResourceDescription)),
-		Properties:  getPluginConfiguration(data.Get(utils.TerraformProperties)),
+		Properties:  getPluginConfiguration(data.Get(utils.TerraformResourceProperties)),
 		Rules:       rules,
 	}
 
@@ -111,9 +111,9 @@ func resourceSecretConfigCreate(ctx context.Context, data *schema.ResourceData, 
 func resourceSecretConfigUpdate(ctx context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if data.HasChange(utils.TerraformProperties) ||
+	if data.HasChange(utils.TerraformResourceProperties) ||
 		data.HasChange(utils.TerraformResourceRules) {
-		oldCfg, newCfg := data.GetChange(utils.TerraformProperties)
+		oldCfg, newCfg := data.GetChange(utils.TerraformResourceProperties)
 
 		if cmp.Equal(oldCfg, newCfg) {
 			return nil
@@ -124,14 +124,14 @@ func resourceSecretConfigUpdate(ctx context.Context, data *schema.ResourceData, 
 			return diag.Errorf("reading '%s' errored with %v", utils.TerraformResourceRules, err)
 		}
 
-		properties := getPluginConfiguration(data.Get(utils.TerraformProperties))
+		properties := getPluginConfiguration(data.Get(utils.TerraformResourceProperties))
 		if err != nil {
-			return diag.Errorf("reading '%s' errored with %v", utils.TerraformProperties, err)
+			return diag.Errorf("reading '%s' errored with %v", utils.TerraformResourceProperties, err)
 		}
 
 		cfg := gocd.CommonConfig{
 			ID:          utils.String(data.Get(utils.TerraformResourceProfileID)),
-			PluginID:    utils.String(data.Get(utils.TerraformPluginID)),
+			PluginID:    utils.String(data.Get(utils.TerraformResourcePluginID)),
 			Description: utils.String(data.Get(utils.TerraformResourceDescription)),
 			Properties:  properties,
 			Rules:       rules,

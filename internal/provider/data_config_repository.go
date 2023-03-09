@@ -32,8 +32,8 @@ func dataSourceConfigRepositoryRead(ctx context.Context, d *schema.ResourceData,
 		return diag.Errorf("getting config repo %s errored with: %v", profileID, err)
 	}
 
-	if err = d.Set(utils.TerraformPluginID, response.PluginID); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, utils.TerraformPluginID, err)
+	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourcePluginID, err)
 	}
 
 	if err = d.Set(utils.TerraformResourceMaterial, flattenMaterial(response.Material)); err != nil {
