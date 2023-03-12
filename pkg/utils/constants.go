@@ -61,4 +61,12 @@ const (
 	TerraformResourceEnvironments        = "environments"
 	TerraformResourceBuildState          = "build_state"
 	TerraformResourceBuildDetails        = "build_details"
+	TerraformResourceSchedule            = "schedule"
+	TerraformResourcePostBackupScript    = "post_backup_script"
+	TerraformResourceEmailOnFailure      = "email_on_failure"
+	TerraformResourceEmailOnSuccess      = "email_on_success"
+	TerraformResourceRetryAfter          = "retry_after"
+	TerraformResourceRetry               = "retry"
+	TerraformResourceDelay               = "delay"
+	TerraformResourceBackupID            = "backup_id"
 )

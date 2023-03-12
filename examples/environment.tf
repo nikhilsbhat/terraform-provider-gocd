@@ -19,5 +19,6 @@ resource "gocd_environment" "sample_environment" {
 }
 
 data "gocd_environment" "sample_environment" {
-  name = gocd_environment.sample_environment.id
+  depends_on = [gocd_environment.sample_environment]
+  name       = gocd_environment.sample_environment.id
 }

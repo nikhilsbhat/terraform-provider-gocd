@@ -95,6 +95,8 @@ func Provider() *schema.Provider {
 			"gocd_environment":           resourceEnvironment(),
 			"gocd_encrypt_value":         resourceEncryptValue(),
 			"gocd_secret_config":         resourceSecretConfig(),
+			"gocd_backup_config":         resourceBackupConfig(),
+			"gocd_backup_schedule":       resourceBackupSchedule(),
 			// "gocd_agent":                 resourceAgentConfig(),
 		},
 
