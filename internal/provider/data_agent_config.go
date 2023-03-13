@@ -208,11 +208,13 @@ func datasourceAgentRead(ctx context.Context, d *schema.ResourceData, meta inter
 	return nil
 }
 
-func flattenEnvironments(environments []gocd.Environment) []string {
+func flattenEnvironments(envs any) []string {
 	envList := make([]string, 0)
+	environments := envs.([]interface{})
 
 	for _, environment := range environments {
-		envList = append(envList, environment.Name)
+		newEnvironment := environment.(map[string]interface{})
+		envList = append(envList, newEnvironment["name"].(string))
 	}
 
 	return envList

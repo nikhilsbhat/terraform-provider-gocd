@@ -36,5 +36,5 @@ output "kubernetes_plugin" {
 }
 
 output "sample_agent_config" {
-  value = data.gocd_agent_config.sample_agent.hostname
+  value = data.gocd_agent.sample_agent.hostname
 }

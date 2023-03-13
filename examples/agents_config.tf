@@ -1,3 +1,8 @@
-data "gocd_agent_config" "sample_agent" {
-  uuid = "3bc47e62-eb8f-4c37-b082-1517f10ef7aa"
+resource "gocd_agent" "sample_agent" {
+  uuid = "bbfe3a75-7fd8-48db-af32-0a91b9efd0ab"
+  environments = ["sample_environment_3"]
+}
+
+data "gocd_agent" "sample_agent" {
+  uuid = "bbfe3a75-7fd8-48db-af32-0a91b9efd0ab"
 }
