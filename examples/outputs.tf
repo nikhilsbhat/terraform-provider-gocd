@@ -38,3 +38,11 @@ output "kubernetes_plugin" {
 output "sample_agent_config" {
   value = data.gocd_agent.sample_agent.hostname
 }
+
+output "helm_images" {
+  value = data.gocd_pipeline.helm_images.config
+}
+
+output "helm_drift" {
+  value = gocd_pipeline.helm_drift.config
+}

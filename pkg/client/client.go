@@ -74,7 +74,7 @@ func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, di
 	if !clientCfg.skipCheck {
 		if _, err := goCDClient.GetServerHealth(); err != nil {
 			if !errors.Is(err, goErr.MarshalError{}) {
-				return nil, diag.Errorf("errored while connecting to server\nerror: %v\ncheck the baseURL and authorization config before rerunning plan again", err)
+				return nil, diag.Errorf("errored while connecting to server\nerror: %v\nkindly re-check the baseURL and authorization config before rerunning plan again", err)
 			}
 		}
 	}

@@ -98,6 +98,7 @@ func Provider() *schema.Provider {
 			"gocd_backup_config":         resourceBackupConfig(),
 			"gocd_backup_schedule":       resourceBackupSchedule(),
 			"gocd_agent":                 resourceAgentConfig(),
+			"gocd_pipeline":              resourcePipeline(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -110,6 +111,7 @@ func Provider() *schema.Provider {
 			"gocd_secret_config":         dataSourceSecretConfig(),
 			"gocd_plugin_info":           dataSourcePluginInfo(),
 			"gocd_agent":                 dataSourceAgentConfig(),
+			"gocd_pipeline":              dataSourcePipeline(),
 		},
 
 		ConfigureContextFunc: client.GetGoCDClient,

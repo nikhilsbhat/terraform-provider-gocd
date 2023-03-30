@@ -69,4 +69,9 @@ const (
 	TerraformResourceRetry               = "retry"
 	TerraformResourceDelay               = "delay"
 	TerraformResourceBackupID            = "backup_id"
+	TerraformResourceYAML                = "yaml"
+	TerraformResourceConfig              = "config"
+	TerraformResourcePauseOnCreation     = "pause_on_creation"
+	TerraformResourcePauseReason         = "pause_reason"
+	TerraformResourceGroup               = "group"
 )

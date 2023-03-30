@@ -25,8 +25,8 @@ local.fmt: ## Lints all the go code in the application.
 	$(GOBIN)/goimports -w $(GOFMT_FILES)
 
 local.check: local.fmt ## Loads all the dependencies to vendor directory
-	go mod vendor
 	go mod tidy
+	go mod vendor
 
 build.local: local.check ## Generates the artifact with the help of 'go build'
 	go build -o $(APP_NAME)_v$(VERSION) -ldflags="-s -w"
