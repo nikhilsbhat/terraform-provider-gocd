@@ -2,6 +2,7 @@ package utils
 
 const (
 	TerraformResourceProfileID           = "profile_id"
+	TerraformResourceStoreID             = "store_id"
 	TerraformResourceConfigRepo          = "config_repos"
 	TerraformResourcePluginConfiguration = "plugin_configurations"
 	TerraformResourceConfiguration       = "configuration"

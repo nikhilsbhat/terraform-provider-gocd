@@ -214,7 +214,7 @@ func propertiesSchemaResource() *schema.Schema {
 		Type:        schema.TypeSet,
 		Required:    true,
 		Computed:    false,
-		Description: "the list of configuration properties that represent the configuration of this profile.",
+		Description: "The list of configuration properties that represent the configuration of the profile.",
 		Elem: &schema.Resource{
 			Schema: map[string]*schema.Schema{
 				"key": {

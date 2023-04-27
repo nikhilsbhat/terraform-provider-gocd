@@ -46,3 +46,7 @@ output "helm_images" {
 output "helm_drift" {
   value = gocd_pipeline.helm_drift.config
 }
+
+output "docker_artifact_store" {
+  value = data.gocd_artifact_store.docker.properties
+}
