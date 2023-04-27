@@ -19,7 +19,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/nikhilsbhat/gocd-sdk-go"
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 
@@ -129,27 +128,24 @@ func resourcePluginsSettingsRead(ctx context.Context, d *schema.ResourceData, me
 func resourcePluginsSettingsUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.HasChange(utils.TerraformResourcePluginConfiguration) {
-		oldCfg, newCfg := d.GetChange(utils.TerraformResourcePluginConfiguration)
-		if !cmp.Equal(oldCfg, newCfg) {
-			pluginSettings := gocd.PluginSettings{
-				ID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
-				Configuration: getPluginConfiguration(newCfg),
-				ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
-			}
+	if !d.HasChange(utils.TerraformResourcePluginConfiguration) {
+		log.Printf("nothing to update so skipping")
 
-			_, err := defaultConfig.UpdatePluginSettings(pluginSettings)
-			if err != nil {
-				return diag.Errorf("updating plugin configuration errored with: %v", err)
-			}
-
-			return resourcePluginsSettingsRead(ctx, d, meta)
-		}
+		return nil
 	}
 
-	log.Printf("nothing to update so skipping")
+	pluginSettings := gocd.PluginSettings{
+		ID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
+		Configuration: getPluginConfiguration(d.Get(utils.TerraformResourcePluginConfiguration)),
+		ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
+	}
 
-	return nil
+	_, err := defaultConfig.UpdatePluginSettings(pluginSettings)
+	if err != nil {
+		return diag.Errorf("updating plugin configuration errored with: %v", err)
+	}
+
+	return resourcePluginsSettingsRead(ctx, d, meta)
 }
 
 func resourcePluginsSettingsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

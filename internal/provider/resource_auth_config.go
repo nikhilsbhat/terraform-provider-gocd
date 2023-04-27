@@ -19,7 +19,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/nikhilsbhat/gocd-sdk-go"
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 
@@ -117,29 +116,26 @@ func resourceAuthConfigRead(ctx context.Context, d *schema.ResourceData, meta in
 func resourceAuthConfigUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.HasChange(utils.TerraformResourceProperties) {
-		oldCfg, newCfg := d.GetChange(utils.TerraformResourceProperties)
-		if !cmp.Equal(oldCfg, newCfg) {
-			cfg := gocd.CommonConfig{
-				ID:                  utils.String(d.Get(utils.TerraformResourceProfileID)),
-				PluginID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
-				Properties:          getPluginConfiguration(newCfg),
-				AllowOnlyKnownUsers: utils.Bool(d.Get(utils.TerraformResourceAllowKnownUser)),
-				ETAG:                utils.String(d.Get(utils.TerraformResourceEtag)),
-			}
+	if !d.HasChange(utils.TerraformResourceProperties) {
+		log.Printf("nothing to update so skipping")
 
-			_, err := defaultConfig.UpdateAuthConfig(cfg)
-			if err != nil {
-				return diag.Errorf("updating auth configuration %s errored with: %v", cfg.ID, err)
-			}
-
-			return resourceAuthConfigRead(ctx, d, meta)
-		}
+		return nil
 	}
 
-	log.Printf("nothing to update so skipping")
+	cfg := gocd.CommonConfig{
+		ID:                  utils.String(d.Get(utils.TerraformResourceProfileID)),
+		PluginID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
+		Properties:          getPluginConfiguration(d.Get(utils.TerraformResourceProperties)),
+		AllowOnlyKnownUsers: utils.Bool(d.Get(utils.TerraformResourceAllowKnownUser)),
+		ETAG:                utils.String(d.Get(utils.TerraformResourceEtag)),
+	}
 
-	return nil
+	_, err := defaultConfig.UpdateAuthConfig(cfg)
+	if err != nil {
+		return diag.Errorf("updating auth configuration %s errored with: %v", cfg.ID, err)
+	}
+
+	return resourceAuthConfigRead(ctx, d, meta)
 }
 
 func resourceAuthConfigDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

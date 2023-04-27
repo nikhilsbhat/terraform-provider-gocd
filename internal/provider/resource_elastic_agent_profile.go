@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/nikhilsbhat/gocd-sdk-go"
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 
@@ -94,28 +93,25 @@ func resourceElasticAgentProfileRead(ctx context.Context, d *schema.ResourceData
 func resourceElasticAgentProfileUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.HasChange(utils.TerraformResourceProperties) {
-		oldCfg, newCfg := d.GetChange(utils.TerraformResourceProperties)
-		if !cmp.Equal(oldCfg, newCfg) {
-			cfg := gocd.CommonConfig{
-				ID:               utils.String(d.Get(utils.TerraformResourceProfileID)),
-				ClusterProfileID: utils.String(d.Get(utils.TerraformResourceClusterProfileID)),
-				Properties:       getPluginConfiguration(newCfg),
-				ETAG:             utils.String(d.Get(utils.TerraformResourceEtag)),
-			}
+	if !d.HasChange(utils.TerraformResourceProperties) {
+		log.Printf("nothing to update so skipping")
 
-			_, err := defaultConfig.UpdateElasticAgentProfile(cfg)
-			if err != nil {
-				return diag.Errorf("updating elastic agent profile %s errored with: %v", cfg.ID, err)
-			}
-
-			return resourceElasticAgentProfileRead(ctx, d, meta)
-		}
+		return nil
 	}
 
-	log.Printf("nothing to update so skipping")
+	cfg := gocd.CommonConfig{
+		ID:               utils.String(d.Get(utils.TerraformResourceProfileID)),
+		ClusterProfileID: utils.String(d.Get(utils.TerraformResourceClusterProfileID)),
+		Properties:       getPluginConfiguration(d.Get(utils.TerraformResourceProperties)),
+		ETAG:             utils.String(d.Get(utils.TerraformResourceEtag)),
+	}
 
-	return nil
+	_, err := defaultConfig.UpdateElasticAgentProfile(cfg)
+	if err != nil {
+		return diag.Errorf("updating elastic agent profile %s errored with: %v", cfg.ID, err)
+	}
+
+	return resourceElasticAgentProfileRead(ctx, d, meta)
 }
 
 func resourceElasticAgentProfileDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

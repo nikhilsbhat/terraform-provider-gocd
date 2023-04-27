@@ -19,7 +19,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/nikhilsbhat/gocd-sdk-go"
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 
@@ -109,28 +108,25 @@ func resourceClusterProfileRead(ctx context.Context, d *schema.ResourceData, met
 func resourceClusterProfileUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.HasChange(utils.TerraformResourceProperties) {
-		oldCfg, newCfg := d.GetChange(utils.TerraformResourceProperties)
-		if !cmp.Equal(oldCfg, newCfg) {
-			cfg := gocd.CommonConfig{
-				ID:         utils.String(d.Get(utils.TerraformResourceProfileID)),
-				PluginID:   utils.String(d.Get(utils.TerraformResourcePluginID)),
-				Properties: getPluginConfiguration(newCfg),
-				ETAG:       utils.String(d.Get(utils.TerraformResourceEtag)),
-			}
+	if !d.HasChange(utils.TerraformResourceProperties) {
+		log.Printf("nothing to update so skipping")
 
-			_, err := defaultConfig.UpdateClusterProfile(cfg)
-			if err != nil {
-				return diag.Errorf("updating cluster profile %s errored with: %v", cfg.ID, err)
-			}
-
-			return resourceClusterProfileRead(ctx, d, meta)
-		}
+		return nil
 	}
 
-	log.Printf("nothing to update so skipping")
+	cfg := gocd.CommonConfig{
+		ID:         utils.String(d.Get(utils.TerraformResourceProfileID)),
+		PluginID:   utils.String(d.Get(utils.TerraformResourcePluginID)),
+		Properties: getPluginConfiguration(d.Get(utils.TerraformResourceProperties)),
+		ETAG:       utils.String(d.Get(utils.TerraformResourceEtag)),
+	}
 
-	return nil
+	_, err := defaultConfig.UpdateClusterProfile(cfg)
+	if err != nil {
+		return diag.Errorf("updating cluster profile %s errored with: %v", cfg.ID, err)
+	}
+
+	return resourceClusterProfileRead(ctx, d, meta)
 }
 
 func resourceClusterProfileDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
