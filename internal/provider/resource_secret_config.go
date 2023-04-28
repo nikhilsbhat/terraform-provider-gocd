@@ -86,7 +86,7 @@ func resourceSecretConfigCreate(ctx context.Context, data *schema.ResourceData, 
 		id = resourceID
 	}
 
-	rules, err := getRules(data.Get(utils.TerraformResourceRules))
+	rules, err := flattenMapSlice(data.Get(utils.TerraformResourceRules))
 	if err != nil {
 		return diag.Errorf("reading rules errored with %v", err)
 	}
@@ -119,7 +119,7 @@ func resourceSecretConfigUpdate(ctx context.Context, data *schema.ResourceData, 
 			return nil
 		}
 
-		rules, err := getRules(data.Get(utils.TerraformResourceRules))
+		rules, err := flattenMapSlice(data.Get(utils.TerraformResourceRules))
 		if err != nil {
 			return diag.Errorf("reading '%s' errored with %v", utils.TerraformResourceRules, err)
 		}

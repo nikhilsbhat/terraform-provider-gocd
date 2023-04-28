@@ -63,8 +63,7 @@ func resourceArtifactStoreCreate(ctx context.Context, d *schema.ResourceData, me
 		Properties: getPluginConfiguration(d.Get(utils.TerraformResourceProperties)),
 	}
 
-	_, err := defaultConfig.CreateArtifactStore(cfg)
-	if err != nil {
+	if _, err := defaultConfig.CreateArtifactStore(cfg); err != nil {
 		return diag.Errorf("creating artifact store '%s' for plugin '%s' errored with %v", cfg.ID, cfg.PluginID, err)
 	}
 

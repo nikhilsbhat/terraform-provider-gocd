@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.24.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/nikhilsbhat/gocd-cli v0.1.0
-	github.com/nikhilsbhat/gocd-sdk-go v0.1.2-0.20230329165757-c14e7e1af7ef
+	github.com/nikhilsbhat/gocd-sdk-go v0.1.2
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cast v1.5.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -68,9 +68,9 @@ require (
 	github.com/vmihailenco/tagparser v0.1.1 // indirect
 	github.com/zclconf/go-cty v1.12.1 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
-	golang.org/x/net v0.8.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/net v0.9.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	google.golang.org/grpc v1.50.1 // indirect

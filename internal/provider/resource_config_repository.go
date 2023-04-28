@@ -75,7 +75,7 @@ func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta 
 		id = resourceID
 	}
 
-	rules, err := getRules(d.Get(utils.TerraformResourceRules))
+	rules, err := flattenMapSlice(d.Get(utils.TerraformResourceRules))
 	if err != nil {
 		return diag.Errorf("reading rules errored with %v", err)
 	}
@@ -128,7 +128,7 @@ func resourceConfigRepoUpdate(ctx context.Context, d *schema.ResourceData, meta 
 			return nil
 		}
 
-		rules, err := getRules(d.Get(utils.TerraformResourceRules))
+		rules, err := flattenMapSlice(d.Get(utils.TerraformResourceRules))
 		if err != nil {
 			return diag.Errorf("reading rules errored with %v", err)
 		}
@@ -178,7 +178,7 @@ func resourceConfigRepoDelete(ctx context.Context, d *schema.ResourceData, meta 
 	return nil
 }
 
-func getRules(configs interface{}) ([]map[string]string, error) {
+func flattenMapSlice(configs interface{}) ([]map[string]string, error) {
 	var rules []map[string]string
 	if err := mapstructure.Decode(configs, &rules); err != nil {
 		return nil, fmt.Errorf(err.Error())

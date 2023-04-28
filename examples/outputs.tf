@@ -50,3 +50,11 @@ output "helm_drift" {
 output "docker_artifact_store" {
   value = data.gocd_artifact_store.docker.properties
 }
+
+output "sample_role" {
+  value = data.gocd_role.sample.users
+}
+
+output "sample_ldap_role" {
+  value = data.gocd_role.sample_ldap.properties
+}

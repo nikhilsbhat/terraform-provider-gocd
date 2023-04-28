@@ -2,7 +2,7 @@ package provider
 
 import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-var settingAttrErrorTmp = "setting '%s' errored with %v"
+var settingAttrErrorTmp = "setting '%s' errored with '%v'"
 
 func configRepoSchema() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
