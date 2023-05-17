@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/nikhilsbhat/gocd-sdk-go"
@@ -40,6 +41,9 @@ func resourceElasticAgentProfile() *schema.Resource {
 				ForceNew:    false,
 				Description: "etag used to track the elastic agent profile configurations",
 			},
+		},
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceElasticAgentProfileImport,
 		},
 	}
 }
@@ -131,4 +135,39 @@ func resourceElasticAgentProfileDelete(ctx context.Context, d *schema.ResourceDa
 	d.SetId("")
 
 	return nil
+}
+
+func resourceElasticAgentProfileImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	defaultConfig := meta.(gocd.GoCd)
+
+	profileID := utils.String(d.Id())
+	response, err := defaultConfig.GetElasticAgentProfile(profileID)
+	if err != nil {
+		return nil, fmt.Errorf("getting elastic agent profile configuration %s errored with: %w", profileID, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceProfileID, profileID); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceStoreID)
+	}
+
+	if err = d.Set(utils.TerraformResourceClusterProfileID, response.ClusterProfileID); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceClusterProfileID)
+	}
+
+	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
+	}
+
+	flattenedProperties, err := utils.MapSlice(response.Properties)
+	if err != nil {
+		d.SetId("")
+
+		return nil, fmt.Errorf("errored while flattening artifact store properties obtained: %w", err)
+	}
+
+	if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceProperties)
+	}
+
+	return []*schema.ResourceData{d}, nil
 }

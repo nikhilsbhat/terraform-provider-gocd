@@ -19,6 +19,9 @@ terraform.tfstate*
 .terraform
 *.log
 
+# dropping all plugin jars
+*.jar
+
 # dropping the templates
 templates-latest/
 

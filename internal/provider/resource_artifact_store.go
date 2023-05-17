@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -39,6 +40,9 @@ func resourceArtifactStore() *schema.Resource {
 				ForceNew:    false,
 				Description: "etag used to track the plugin settings",
 			},
+		},
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceArtifactStoreImport,
 		},
 	}
 }
@@ -130,4 +134,39 @@ func resourceArtifactStoreDelete(ctx context.Context, d *schema.ResourceData, me
 	d.SetId("")
 
 	return nil
+}
+
+func resourceArtifactStoreImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	defaultConfig := meta.(gocd.GoCd)
+
+	storeID := utils.String(d.Id())
+	response, err := defaultConfig.GetArtifactStore(storeID)
+	if err != nil {
+		return nil, fmt.Errorf("getting artifact store configuration '%s' errored with: %w", storeID, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceStoreID, storeID); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceStoreID)
+	}
+
+	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginID)
+	}
+
+	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
+	}
+
+	flattenedProperties, err := utils.MapSlice(response.Properties)
+	if err != nil {
+		d.SetId("")
+
+		return nil, fmt.Errorf("errored while flattening artifact store properties obtained: %w", err)
+	}
+
+	if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceProperties)
+	}
+
+	return []*schema.ResourceData{d}, nil
 }

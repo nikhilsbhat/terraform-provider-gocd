@@ -17,6 +17,7 @@ package provider
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/nikhilsbhat/gocd-sdk-go"
@@ -55,6 +56,9 @@ func resourceClusterProfile() *schema.Resource {
 				ForceNew:    false,
 				Description: "etag used to track the plugin settings",
 			},
+		},
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceClusterProfileImport,
 		},
 	}
 }
@@ -147,4 +151,39 @@ func resourceClusterProfileDelete(ctx context.Context, d *schema.ResourceData, m
 	d.SetId("")
 
 	return nil
+}
+
+func resourceClusterProfileImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	defaultConfig := meta.(gocd.GoCd)
+
+	profileID := utils.String(d.Id())
+	response, err := defaultConfig.GetClusterProfile(profileID)
+	if err != nil {
+		return nil, fmt.Errorf("getting cluster profile configuration %s errored with: %w", profileID, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceProfileID, profileID); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceStoreID)
+	}
+
+	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginID)
+	}
+
+	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
+	}
+
+	flattenedProperties, err := utils.MapSlice(response.Properties)
+	if err != nil {
+		d.SetId("")
+
+		return nil, fmt.Errorf("errored while flattening artifact store properties obtained: %w", err)
+	}
+
+	if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceProperties)
+	}
+
+	return []*schema.ResourceData{d}, nil
 }

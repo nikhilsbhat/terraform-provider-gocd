@@ -3,7 +3,10 @@ resource "gocd_pipeline" "helm_drift" {
   pause_on_creation = true
   pause_reason      = "better to pause pipeline on creation"
   group             = "sample-group"
-  config            = <<EOF
+  //  plugin_config {
+  //    version = "12.5"
+  //  }
+  config = <<EOF
   environment_variables:
     - name: HELM_PLUGIN
       secure: false

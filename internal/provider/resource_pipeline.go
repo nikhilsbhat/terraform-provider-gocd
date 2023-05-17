@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/nikhilsbhat/gocd-sdk-go"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/nikhilsbhat/gocd-cli/pkg/render"
-	"github.com/nikhilsbhat/gocd-sdk-go"
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
@@ -36,6 +37,53 @@ func resourcePipeline() *schema.Resource {
 				ForceNew:    true,
 				Description: "Name of the pipeline group that this pipeline should be part of.",
 			},
+			// "no_validate": {
+			//	Type:        schema.TypeBool,
+			//	Optional:    true,
+			//	Computed:    false,
+			//	ForceNew:    true,
+			//	Description: "Enabling this would disable the pipeline syntax validation",
+			// },
+			// "plugin_config": {
+			//	Type:        schema.TypeList,
+			//	Optional:    true,
+			//	Computed:    false,
+			//	ForceNew:    true,
+			//	MaxItems:    1,
+			//	Description: "Configurations of the plugin against which the pipeline has to be validated.",
+			//	Elem: &schema.Resource{
+			//		Schema: map[string]*schema.Schema{
+			//			"version": {
+			//				Type:          schema.TypeString,
+			//				Optional:      true,
+			//				Computed:      false,
+			//				ForceNew:      false,
+			//				Description:   "Version of the plugin that needs to be downloaded for validating pipeline syntax",
+			//				ConflictsWith: []string{"plugin_config.0.path", "plugin_config.0.url"},
+			//			},
+			//			"path": {
+			//				Type:          schema.TypeString,
+			//				Optional:      true,
+			//				Computed:      false,
+			//				ForceNew:      false,
+			//				Description:   "Local path to plugin if in case the plugin jar is present locally",
+			//				ConflictsWith: []string{"plugin_config.0.version", "plugin_config.0.url"},
+			//			},
+			//			"url": {
+			//				Type:          schema.TypeString,
+			//				Optional:      true,
+			//				Computed:      false,
+			//				ForceNew:      false,
+			//				Description:   "URL to download the plugin which should be used to validate the pipeline config +
+			//				(ex: https://github.com/tomzo/gocd-yaml-config-plugin/releases/download/0.14.1/yaml-config-plugin-0.14.1.jar)",
+			//				ConflictsWith: []string{"plugin_config.0.path", "plugin_config.0.version"},
+			//				ValidateFunc: validation.All(
+			//					validation.IsURLWithHTTPorHTTPS,
+			//				),
+			//			},
+			//		},
+			//	},
+			// },
 			"config": {
 				Type:        schema.TypeString,
 				Optional:    false,

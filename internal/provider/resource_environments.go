@@ -43,6 +43,9 @@ func resourceEnvironment() *schema.Resource {
 				Description: "etag used to track the environment configurations.",
 			},
 		},
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceEnvironmentImport,
+		},
 	}
 }
 
@@ -151,6 +154,41 @@ func resourceEnvironmentDelete(ctx context.Context, d *schema.ResourceData, meta
 	d.SetId("")
 
 	return nil
+}
+
+func resourceEnvironmentImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	defaultConfig := meta.(gocd.GoCd)
+
+	envName := utils.String(d.Id())
+	response, err := defaultConfig.GetEnvironment(envName)
+	if err != nil {
+		return nil, fmt.Errorf("getting environment %s errored with: %w", envName, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceName, envName); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceName)
+	}
+
+	if err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines)); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
+	}
+
+	flattenedEnvVars, err := utils.MapSlice(response.EnvVars)
+	if err != nil {
+		d.SetId("")
+
+		return nil, fmt.Errorf("errored while flattening environment variable obtained: %w", err)
+	}
+
+	if err = d.Set(utils.TerraformResourceEnvVar, flattenedEnvVars); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceEnvVar)
+	}
+
+	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
+	}
+
+	return []*schema.ResourceData{d}, nil
 }
 
 func getEnvironments(configs interface{}) ([]gocd.EnvVars, error) {

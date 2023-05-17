@@ -71,6 +71,10 @@ func datasourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceEnvVar)
 	}
 
+	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
+	}
+
 	d.SetId(id)
 
 	return nil
