@@ -116,6 +116,7 @@ func Provider() *schema.Provider {
 			"gocd_pipeline":              dataSourcePipeline(),
 			"gocd_artifact_store":        dataSourceArtifactStore(),
 			"gocd_role":                  dataSourceRole(),
+			"gocd_pipeline_group":        dataSourcePipelineGroup(),
 		},
 
 		ConfigureContextFunc: client.GetGoCDClient,

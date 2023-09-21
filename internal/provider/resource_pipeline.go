@@ -5,11 +5,10 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/nikhilsbhat/gocd-sdk-go"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/nikhilsbhat/gocd-cli/pkg/render"
+	"github.com/nikhilsbhat/gocd-sdk-go"
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"

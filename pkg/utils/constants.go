@@ -75,6 +75,8 @@ const (
 	TerraformResourcePauseOnCreation     = "pause_on_creation"
 	TerraformResourcePauseReason         = "pause_reason"
 	TerraformResourceGroup               = "group"
+	TerraformResourcePipelineGroupID     = "group_id"
+	TerraformResourceAuthorization       = "authorization"
 	TerraformResourcePolicy              = "policy"
 	TerraformResourceUsers               = "users"
 	TerraformResourceAuthConfigID        = "auth_config_id"

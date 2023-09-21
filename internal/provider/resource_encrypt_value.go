@@ -3,11 +3,10 @@ package provider
 import (
 	"context"
 
-	"github.com/nikhilsbhat/gocd-sdk-go"
-	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/nikhilsbhat/gocd-sdk-go"
+	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 )
 
 func resourceEncryptValue() *schema.Resource {

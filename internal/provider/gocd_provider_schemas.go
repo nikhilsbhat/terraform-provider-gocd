@@ -508,3 +508,57 @@ func rulesSchema() *schema.Resource {
 		},
 	}
 }
+
+func authConfigSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"view": {
+				Type:        schema.TypeSet,
+				Computed:    true,
+				Optional:    true,
+				Required:    false,
+				Description: "The list of users and roles with view permission for this pipeline group",
+				Elem:        usersANdRolesSchema(),
+			},
+			"operate": {
+				Type:        schema.TypeSet,
+				Computed:    true,
+				Optional:    true,
+				Required:    false,
+				Description: "The list of users and roles with view permission for this pipeline group",
+				Elem:        usersANdRolesSchema(),
+			},
+			"admins": {
+				Type:        schema.TypeSet,
+				Computed:    true,
+				Optional:    true,
+				Required:    false,
+				Description: "The list of users and roles with view permission for this pipeline group",
+				Elem:        usersANdRolesSchema(),
+			},
+		},
+	}
+}
+
+func usersANdRolesSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"users": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Optional:    true,
+				Required:    false,
+				Description: "List of users present in GoCD.",
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
+			"roles": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Optional:    true,
+				Required:    false,
+				Description: "List of roles present in GoCD.",
+				Elem:        &schema.Schema{Type: schema.TypeString},
+			},
+		},
+	}
+}
