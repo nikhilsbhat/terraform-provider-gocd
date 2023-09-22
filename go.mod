@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.26.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/nikhilsbhat/gocd-cli v0.1.0
-	github.com/nikhilsbhat/gocd-sdk-go v0.1.9-0.20230921144150-684a876cba84
+	github.com/nikhilsbhat/gocd-sdk-go v0.1.9-0.20230922033426-b10dfcdb3dbd
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cast v1.5.0
 	gopkg.in/yaml.v3 v3.0.1

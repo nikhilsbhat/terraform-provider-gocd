@@ -170,8 +170,8 @@ github.com/mitchellh/reflectwalk v1.0.2/go.mod h1:mSTlrgnPZtwu0c4WaC2kGObEpuNDbx
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
 github.com/nikhilsbhat/gocd-cli v0.1.0 h1:k7myHhSy6tuPZm0dO3RBVjAqBZFQh4XalQZvxpd2VfM=
 github.com/nikhilsbhat/gocd-cli v0.1.0/go.mod h1:gfczP6M7WOOXIEc9QdAJ7R846+3CfQsdSEXC44fg3Ng=
-github.com/nikhilsbhat/gocd-sdk-go v0.1.9-0.20230921144150-684a876cba84 h1:kfm8XmQEUugc2rFZ4/TCKxLXHYE240L9dRqD7Vxb+1c=
-github.com/nikhilsbhat/gocd-sdk-go v0.1.9-0.20230921144150-684a876cba84/go.mod h1:ubwvA7YgcWDUXiCghrJGRKTdeVuXpDmNzIp6ZvVzdfk=
+github.com/nikhilsbhat/gocd-sdk-go v0.1.9-0.20230922033426-b10dfcdb3dbd h1:7GTqH/4aJkJ3HfbsrgsyXf95WUoFNCb3HR6N/6e1Qb8=
+github.com/nikhilsbhat/gocd-sdk-go v0.1.9-0.20230922033426-b10dfcdb3dbd/go.mod h1:ubwvA7YgcWDUXiCghrJGRKTdeVuXpDmNzIp6ZvVzdfk=
 github.com/oklog/run v1.0.0 h1:Ru7dDtJNOyC66gQ5dQmaCa0qIsAUFY3sFpK1Xk8igrw=
 github.com/oklog/run v1.0.0/go.mod h1:dlhp/R75TPv97u0XWUtDeV/lRKWPKSdTuV0TZvrmrQA=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

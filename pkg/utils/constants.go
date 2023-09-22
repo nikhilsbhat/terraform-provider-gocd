@@ -79,5 +79,8 @@ const (
 	TerraformResourceAuthorization       = "authorization"
 	TerraformResourcePolicy              = "policy"
 	TerraformResourceUsers               = "users"
+	TerraformResourceRoles               = "roles"
 	TerraformResourceAuthConfigID        = "auth_config_id"
+	TerraformResourceOperate             = "operate"
+	TerraformResourceAdmins              = "admins"
 )

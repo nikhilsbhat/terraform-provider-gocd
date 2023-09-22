@@ -101,6 +101,7 @@ func Provider() *schema.Provider {
 			"gocd_pipeline":              resourcePipeline(),
 			"gocd_artifact_store":        resourceArtifactStore(),
 			"gocd_role":                  resourceRole(),
+			"gocd_pipeline_group":        resourcePipelineGroup(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{

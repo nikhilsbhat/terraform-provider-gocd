@@ -79,10 +79,8 @@ func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta 
 	if err != nil {
 		return diag.Errorf("reading rules errored with %v", err)
 	}
+
 	material := getMaterials(d.Get(utils.TerraformResourceMaterial))
-	if err != nil {
-		return diag.Errorf("reading material errored with %v", err)
-	}
 
 	cfg := gocd.ConfigRepo{
 		ID:            utils.String(d.Get(utils.TerraformResourceProfileID)),
@@ -134,9 +132,6 @@ func resourceConfigRepoUpdate(ctx context.Context, d *schema.ResourceData, meta 
 		}
 
 		material := getMaterials(d.Get(utils.TerraformResourceMaterial))
-		if err != nil {
-			return diag.Errorf("reading material errored with %v", err)
-		}
 
 		cfg := gocd.ConfigRepo{
 			ID:       utils.String(d.Get(utils.TerraformResourceProfileID)),
