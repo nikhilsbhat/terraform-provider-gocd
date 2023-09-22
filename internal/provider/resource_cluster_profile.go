@@ -92,7 +92,7 @@ func resourceClusterProfileCreate(ctx context.Context, d *schema.ResourceData, m
 	return resourceClusterProfileRead(ctx, d, meta)
 }
 
-func resourceClusterProfileRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceClusterProfileRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
@@ -132,7 +132,7 @@ func resourceClusterProfileUpdate(ctx context.Context, d *schema.ResourceData, m
 	return resourceClusterProfileRead(ctx, d, meta)
 }
 
-func resourceClusterProfileDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceClusterProfileDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -152,7 +152,7 @@ func resourceClusterProfileDelete(ctx context.Context, d *schema.ResourceData, m
 	return nil
 }
 
-func resourceClusterProfileImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceClusterProfileImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Id())

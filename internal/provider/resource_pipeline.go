@@ -181,7 +181,7 @@ func resourcePipelineCreate(ctx context.Context, d *schema.ResourceData, meta in
 	return resourcePipelineRead(ctx, d, meta)
 }
 
-func resourcePipelineRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	name := utils.String(d.Get(utils.TerraformResourceName))
@@ -239,7 +239,7 @@ func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	return resourcePipelineRead(ctx, d, meta)
 }
 
-func resourcePipelineDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

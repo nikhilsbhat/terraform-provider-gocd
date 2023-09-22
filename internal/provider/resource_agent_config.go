@@ -101,7 +101,7 @@ func resourceAgentConfigCreate(ctx context.Context, d *schema.ResourceData, meta
 	return resourceAgentConfigRead(ctx, d, meta)
 }
 
-func resourceAgentConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAgentConfigRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	response, err := defaultConfig.GetAgent(d.Id())
@@ -120,7 +120,7 @@ func resourceAgentConfigRead(ctx context.Context, d *schema.ResourceData, meta i
 	return nil
 }
 
-func resourceAgentConfigDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAgentConfigDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	id := d.Id()
 	if len(d.Id()) == 0 {
 		return diag.Errorf("resource with the ID '%s' not found", id)

@@ -44,7 +44,7 @@ func dataSourceElasticAgentProfile() *schema.Resource {
 	}
 }
 
-func datasourceElasticAgentProfileRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

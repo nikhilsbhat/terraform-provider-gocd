@@ -116,7 +116,7 @@ func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, meta interf
 	return resourceRoleRead(ctx, d, meta)
 }
 
-func resourceRoleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	name := utils.String(d.Get(utils.TerraformResourceName))
@@ -175,7 +175,7 @@ func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 	return resourceRoleRead(ctx, d, meta)
 }
 
-func resourceRoleDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRoleDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

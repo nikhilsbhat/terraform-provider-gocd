@@ -16,7 +16,7 @@ func dataSourceConfigRepository() *schema.Resource {
 	}
 }
 
-func dataSourceConfigRepositoryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceConfigRepositoryRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

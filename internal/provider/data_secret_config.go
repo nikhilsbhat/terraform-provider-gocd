@@ -59,7 +59,7 @@ func dataSourceSecretConfig() *schema.Resource {
 	}
 }
 
-func dataSourceSecretConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceSecretConfigRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

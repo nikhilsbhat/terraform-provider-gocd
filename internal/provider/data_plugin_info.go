@@ -57,7 +57,7 @@ func dataSourcePluginInfo() *schema.Resource {
 	}
 }
 
-func datasourcePluginInfoRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourcePluginInfoRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

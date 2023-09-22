@@ -21,6 +21,7 @@ linters:
     - goconst
     - varnamelen
     - goerr113
+    - depguard
 
 issues:
   exclude-rules:

@@ -51,7 +51,7 @@ func dataSourceAuthConfig() *schema.Resource {
 	}
 }
 
-func datasourceAuthConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceAuthConfigRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

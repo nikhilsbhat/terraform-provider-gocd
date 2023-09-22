@@ -76,7 +76,7 @@ func resourceArtifactStoreCreate(ctx context.Context, d *schema.ResourceData, me
 	return resourceArtifactStoreRead(ctx, d, meta)
 }
 
-func resourceArtifactStoreRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceArtifactStoreRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	storeID := utils.String(d.Get(utils.TerraformResourceStoreID))
@@ -116,7 +116,7 @@ func resourceArtifactStoreUpdate(ctx context.Context, d *schema.ResourceData, me
 	return resourceArtifactStoreRead(ctx, d, meta)
 }
 
-func resourceArtifactStoreDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceArtifactStoreDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -136,7 +136,7 @@ func resourceArtifactStoreDelete(ctx context.Context, d *schema.ResourceData, me
 	return nil
 }
 
-func resourceArtifactStoreImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceArtifactStoreImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	storeID := utils.String(d.Id())

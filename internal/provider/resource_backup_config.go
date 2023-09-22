@@ -75,7 +75,7 @@ func resourceBackupConfigCreate(ctx context.Context, d *schema.ResourceData, met
 	return resourceBackupConfigRead(ctx, d, meta)
 }
 
-func resourceBackupConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBackupConfigRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	response, err := defaultConfig.GetBackupConfig()
@@ -130,7 +130,7 @@ func resourceBackupConfigUpdate(ctx context.Context, d *schema.ResourceData, met
 	return resourceBackupConfigRead(ctx, d, meta)
 }
 
-func resourceBackupConfigDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBackupConfigDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

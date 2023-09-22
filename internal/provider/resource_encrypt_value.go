@@ -34,7 +34,7 @@ func resourceEncryptValue() *schema.Resource {
 	}
 }
 
-func resourceEncryptValueCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEncryptValueCreate(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -67,11 +67,11 @@ func resourceEncryptValueCreate(ctx context.Context, d *schema.ResourceData, met
 	return nil
 }
 
-func resourceEncryptValueRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEncryptValueRead(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	return nil
 }
 
-func resourceEncryptValueDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEncryptValueDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	id := d.Id()
 	if len(d.Id()) == 0 {
 		return diag.Errorf("resource with the ID '%s' not found", id)

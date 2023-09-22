@@ -100,7 +100,7 @@ func resourceAuthConfigCreate(ctx context.Context, d *schema.ResourceData, meta 
 	return nil
 }
 
-func resourceAuthConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAuthConfigRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
@@ -141,7 +141,7 @@ func resourceAuthConfigUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	return resourceAuthConfigRead(ctx, d, meta)
 }
 
-func resourceAuthConfigDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAuthConfigDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -161,7 +161,7 @@ func resourceAuthConfigDelete(ctx context.Context, d *schema.ResourceData, meta 
 	return nil
 }
 
-func resourceAuthConfigImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceAuthConfigImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Id())

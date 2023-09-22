@@ -125,7 +125,7 @@ func dataSourceAgentConfig() *schema.Resource {
 	}
 }
 
-func datasourceAgentRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceAgentRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

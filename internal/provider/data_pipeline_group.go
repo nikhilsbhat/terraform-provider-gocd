@@ -44,7 +44,7 @@ func dataSourcePipelineGroup() *schema.Resource {
 	}
 }
 
-func datasourcePipelineGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -69,14 +69,7 @@ func datasourcePipelineGroupRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
-	flattenedAuthorization, err := flattenAuthorization(response.Authorization)
-	if err != nil {
-		d.SetId("")
-
-		return diag.Errorf("errored while flattening Authorization obtained: %v", err)
-	}
-
-	if err = d.Set(utils.TerraformResourceAuthorization, flattenedAuthorization); err != nil {
+	if err = d.Set(utils.TerraformResourceAuthorization, flattenAuthorization(response.Authorization)); err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAuthorization)
 	}
 
@@ -85,14 +78,14 @@ func datasourcePipelineGroupRead(ctx context.Context, d *schema.ResourceData, me
 	return nil
 }
 
-func flattenAuthorization(authorization gocd.PipelineGroupAuthorizationConfig) ([]map[string]interface{}, error) {
+func flattenAuthorization(authorization gocd.PipelineGroupAuthorizationConfig) []map[string]interface{} {
 	return []map[string]interface{}{
 		{
 			"admins":  getUsersNRoles(authorization.Admins),
 			"operate": getUsersNRoles(authorization.Operate),
 			"view":    getUsersNRoles(authorization.View),
 		},
-	}, nil
+	}
 }
 
 func getUsersNRoles(authorization gocd.AuthorizationConfig) []map[string]interface{} {

@@ -149,7 +149,7 @@ func resourceSecretConfigUpdate(ctx context.Context, data *schema.ResourceData, 
 	return nil
 }
 
-func resourceSecretConfigRead(ctx context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceSecretConfigRead(_ context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(data.Get(utils.TerraformResourceProfileID))
@@ -165,7 +165,7 @@ func resourceSecretConfigRead(ctx context.Context, data *schema.ResourceData, me
 	return nil
 }
 
-func resourceSecretConfigDelete(ctx context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceSecretConfigDelete(_ context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := data.Id(); len(id) == 0 {

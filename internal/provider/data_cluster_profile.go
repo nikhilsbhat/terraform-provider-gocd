@@ -44,7 +44,7 @@ func dataSourceClusterProfile() *schema.Resource {
 	}
 }
 
-func datasourceClusterProfileRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceClusterProfileRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

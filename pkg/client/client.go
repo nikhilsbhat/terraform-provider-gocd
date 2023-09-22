@@ -10,7 +10,7 @@ import (
 	goErr "github.com/nikhilsbhat/gocd-sdk-go/pkg/errors"
 )
 
-func GetGoCDClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+func GetGoCDClient(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	clientCfg := struct {
 		url         string
 		username    string

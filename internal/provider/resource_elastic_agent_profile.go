@@ -77,7 +77,7 @@ func resourceElasticAgentProfileCreate(ctx context.Context, d *schema.ResourceDa
 	return nil
 }
 
-func resourceElasticAgentProfileRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
@@ -117,7 +117,7 @@ func resourceElasticAgentProfileUpdate(ctx context.Context, d *schema.ResourceDa
 	return resourceElasticAgentProfileRead(ctx, d, meta)
 }
 
-func resourceElasticAgentProfileDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceElasticAgentProfileDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {
@@ -136,7 +136,7 @@ func resourceElasticAgentProfileDelete(ctx context.Context, d *schema.ResourceDa
 	return nil
 }
 
-func resourceElasticAgentProfileImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceElasticAgentProfileImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Id())

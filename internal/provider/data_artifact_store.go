@@ -43,7 +43,7 @@ func dataSourceArtifactStore() *schema.Resource {
 	}
 }
 
-func datasourceArtifactStoreRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceArtifactStoreRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

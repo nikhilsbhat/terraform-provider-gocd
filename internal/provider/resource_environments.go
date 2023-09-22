@@ -88,7 +88,7 @@ func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta
 	return resourceEnvironmentRead(ctx, d, meta)
 }
 
-func resourceEnvironmentRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEnvironmentRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	envName := utils.String(d.Get(utils.TerraformResourceName))
@@ -137,7 +137,7 @@ func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta
 	return nil
 }
 
-func resourceEnvironmentDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEnvironmentDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {
@@ -156,7 +156,7 @@ func resourceEnvironmentDelete(ctx context.Context, d *schema.ResourceData, meta
 	return nil
 }
 
-func resourceEnvironmentImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceEnvironmentImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	envName := utils.String(d.Id())

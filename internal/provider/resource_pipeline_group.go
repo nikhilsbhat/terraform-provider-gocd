@@ -84,7 +84,7 @@ func resourcePipelineGroupCreate(ctx context.Context, d *schema.ResourceData, me
 	return resourcePipelineGroupRead(ctx, d, meta)
 }
 
-func resourcePipelineGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	name := utils.String(d.Get(utils.TerraformResourceName))
@@ -123,7 +123,7 @@ func resourcePipelineGroupUpdate(ctx context.Context, d *schema.ResourceData, me
 	return resourcePipelineGroupRead(ctx, d, meta)
 }
 
-func resourcePipelineGroupDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineGroupDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {

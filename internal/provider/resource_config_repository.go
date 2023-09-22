@@ -99,7 +99,7 @@ func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta 
 	return resourceConfigRepoRead(ctx, d, meta)
 }
 
-func resourceConfigRepoRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceConfigRepoRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
@@ -154,7 +154,7 @@ func resourceConfigRepoUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	return nil
 }
 
-func resourceConfigRepoDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceConfigRepoDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {

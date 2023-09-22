@@ -37,7 +37,7 @@ func dataSourcePluginsSetting() *schema.Resource {
 	}
 }
 
-func dataSourcePluginsSettingRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourcePluginsSettingRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

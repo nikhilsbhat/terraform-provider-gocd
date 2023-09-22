@@ -109,7 +109,7 @@ func resourcePluginsSettingsCreate(ctx context.Context, d *schema.ResourceData, 
 	return resourcePluginsSettingsRead(ctx, d, meta)
 }
 
-func resourcePluginsSettingsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	response, err := defaultConfig.GetPluginSettings(utils.String(d.Get(utils.TerraformResourcePluginID)))
@@ -147,7 +147,7 @@ func resourcePluginsSettingsUpdate(ctx context.Context, d *schema.ResourceData, 
 	return resourcePluginsSettingsRead(ctx, d, meta)
 }
 
-func resourcePluginsSettingsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {
