@@ -31,7 +31,7 @@ func Provider() *schema.Provider {
 				ForceNew:    true,
 				Computed:    false,
 				DefaultFunc: schema.EnvDefaultFunc("GOCD_BASE_URL", "www.gocd.com"),
-				Description: "base url of GoCD server, with which this terraform provider will with (https://gocd.myself.com/go)",
+				Description: "base url of GoCD server, with which this terraform provider will connect with (https://gocd.myself.com/go)",
 			},
 			"ca_file": {
 				Type:        schema.TypeString,
@@ -84,6 +84,7 @@ func Provider() *schema.Provider {
 				Description: "setting this to false will skip a validation done during client creation, this helps by avoiding " +
 					"errors being thrown from all resource/data block defined",
 			},
+			"retries": retrySchemas(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{

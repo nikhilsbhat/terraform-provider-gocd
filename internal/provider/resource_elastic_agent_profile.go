@@ -50,31 +50,31 @@ func resourceElasticAgentProfile() *schema.Resource {
 func resourceElasticAgentProfileCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.IsNewResource() {
-		id := d.Id()
-
-		if len(id) == 0 {
-			resourceID := utils.String(d.Get(utils.TerraformResourceProfileID))
-			id = resourceID
-		}
-
-		cfg := gocd.CommonConfig{
-			ID:               utils.String(d.Get(utils.TerraformResourceProfileID)),
-			ClusterProfileID: utils.String(d.Get(utils.TerraformResourceClusterProfileID)),
-			Properties:       getPluginConfiguration(d.Get(utils.TerraformResourceProperties)),
-		}
-
-		_, err := defaultConfig.CreateElasticAgentProfile(cfg)
-		if err != nil {
-			return diag.Errorf("creating elastic agent profile %s for cluster profile %s errored with %v", cfg.ID, cfg.ClusterProfileID, err)
-		}
-
-		d.SetId(id)
-
-		return resourceElasticAgentProfileRead(ctx, d, meta)
+	if !d.IsNewResource() {
+		return nil
 	}
 
-	return nil
+	id := d.Id()
+
+	if len(id) == 0 {
+		resourceID := utils.String(d.Get(utils.TerraformResourceProfileID))
+		id = resourceID
+	}
+
+	cfg := gocd.CommonConfig{
+		ID:               utils.String(d.Get(utils.TerraformResourceProfileID)),
+		ClusterProfileID: utils.String(d.Get(utils.TerraformResourceClusterProfileID)),
+		Properties:       getPluginConfiguration(d.Get(utils.TerraformResourceProperties)),
+	}
+
+	_, err := defaultConfig.CreateElasticAgentProfile(cfg)
+	if err != nil {
+		return diag.Errorf("creating elastic agent profile %s for cluster profile %s errored with %v", cfg.ID, cfg.ClusterProfileID, err)
+	}
+
+	d.SetId(id)
+
+	return resourceElasticAgentProfileRead(ctx, d, meta)
 }
 
 func resourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

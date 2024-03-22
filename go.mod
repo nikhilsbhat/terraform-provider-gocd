@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.26.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/nikhilsbhat/gocd-cli v0.1.0
-	github.com/nikhilsbhat/gocd-sdk-go v0.1.9-0.20230922033426-b10dfcdb3dbd
+	github.com/nikhilsbhat/gocd-sdk-go v0.1.9
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cast v1.5.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -24,7 +24,7 @@ require (
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-resty/resty/v2 v2.8.0 // indirect
+	github.com/go-resty/resty/v2 v2.12.0 // indirect
 	github.com/go-test/deep v1.0.8 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -67,11 +67,11 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/zclconf/go-cty v1.13.1 // indirect
-	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	google.golang.org/grpc v1.56.3 // indirect

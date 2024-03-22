@@ -83,4 +83,7 @@ const (
 	TerraformResourceAuthConfigID        = "auth_config_id"
 	TerraformResourceOperate             = "operate"
 	TerraformResourceAdmins              = "admins"
+	TerraformResourceRetries             = "retries"
+	TerraformResourceCount               = "count"
+	TerraformResourceWaitTime            = "wait_time"
 )

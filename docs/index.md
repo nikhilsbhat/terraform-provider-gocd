@@ -28,6 +28,10 @@ provider "gocd" {
     username   = "admin"
     auth_token = "d8fccbc997d04e917b1490af8e7bf46290ab8c99"
     skip_check = true
+    retries {
+      count     = 10
+      wait_time = 2
+    }
 }
 
 // Create cluster profiles in GoCD
@@ -66,8 +70,17 @@ It supports both basic auth using `password` and bearer token based auth using `
 ### Optional
 
 - `auth_token` (String) bearer-token to be used while connecting with GoCD (API: https://api.gocd.org/current/#access-tokens, UI: https://docs.gocd.org/current/configuration/access_tokens.html) cannot co-exist with password based auth.
-- `base_url` (String) base url of GoCD server, with which this terraform provider will with (https://gocd.myself.com/go)
+- `base_url` (String) base url of GoCD server, with which this terraform provider will connect with (https://gocd.myself.com/go)
 - `ca_file` (String) CA file contents, to be used while connecting to GoCD server when CA based auth is enabled
 - `loglevel` (String) loglevel to be set for the api calls made to GoCD
 - `password` (String) password to be used while connecting with GoCD
+- `retries` (Block Set) Retry configs to be set for the API calls made forG GoCD server. (see [below for nested schema](#nestedblock--retries))
 - `skip_check` (Boolean) setting this to false will skip a validation done during client creation, this helps by avoiding errors being thrown from all resource/data block defined
+
+<a id="nestedblock--retries"></a>
+### Nested Schema for `retries`
+
+Optional:
+
+- `count` (Number) Number of times to retry in case of API failures.
+- `wait_time` (Number) Time interval to wait between subsequent calls

@@ -562,3 +562,30 @@ func usersANdRolesSchema() *schema.Resource {
 		},
 	}
 }
+
+func retrySchemas() *schema.Schema {
+	return &schema.Schema{
+		Type:        schema.TypeSet,
+		Optional:    true,
+		Computed:    false,
+		Description: "Retry configs to be set for the API calls made forG GoCD server.",
+		Elem: &schema.Resource{
+			Schema: map[string]*schema.Schema{
+				"count": {
+					Type:        schema.TypeInt,
+					Optional:    true,
+					Computed:    false,
+					ForceNew:    false,
+					Description: "Number of times to retry in case of API failures.",
+				},
+				"wait_time": {
+					Type:        schema.TypeInt,
+					Optional:    true,
+					Computed:    false,
+					Required:    false,
+					Description: "Time interval to wait between subsequent calls",
+				},
+			},
+		},
+	}
+}

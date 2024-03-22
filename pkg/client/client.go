@@ -3,11 +3,13 @@ package client
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/nikhilsbhat/gocd-sdk-go"
 	goErr "github.com/nikhilsbhat/gocd-sdk-go/pkg/errors"
+	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 )
 
 func GetGoCDClient(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
@@ -71,6 +73,17 @@ func GetGoCDClient(_ context.Context, d *schema.ResourceData) (interface{}, diag
 
 	goCDClient := gocd.NewClient(clientCfg.url, goCDAuth, clientCfg.loglevel, clientCfg.ca)
 
+	retryConfigs := getRetryConfig(d.Get(utils.TerraformResourceRetries))
+	if retryConfigs.count != 0 {
+		log.Printf("setting API retry count to %d:\n", retryConfigs.count)
+		goCDClient.SetRetryCount(retryConfigs.count)
+	}
+
+	if retryConfigs.waitTime != 0 {
+		log.Printf("setting API retry wait time to %d:\n", retryConfigs.waitTime)
+		goCDClient.SetRetryWaitTime(retryConfigs.waitTime)
+	}
+
 	if !clientCfg.skipCheck {
 		if _, err := goCDClient.GetServerHealth(); err != nil {
 			if !errors.Is(err, goErr.MarshalError{}) {
@@ -80,4 +93,18 @@ func GetGoCDClient(_ context.Context, d *schema.ResourceData) (interface{}, diag
 	}
 
 	return goCDClient, nil
+}
+
+type retryConfig struct {
+	count    int
+	waitTime int
+}
+
+func getRetryConfig(retryConfigs interface{}) retryConfig {
+	flattenedRetryConfigs := retryConfigs.(*schema.Set).List()[0].(map[string]interface{})
+
+	return retryConfig{
+		count:    flattenedRetryConfigs[utils.TerraformResourceCount].(int),
+		waitTime: flattenedRetryConfigs[utils.TerraformResourceWaitTime].(int),
+	}
 }
