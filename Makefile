@@ -72,10 +72,10 @@ build:
 	GORELEASER_CURRENT_TAG=$(VERSION) goreleaser build --rm-dist --snapshot
 
 local.build: local.check ## Generates the artifact with the help of 'go build'
-	GORELEASER_CURRENT_TAG=$(VERSION) BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT} goreleaser build --rm-dist
+	GORELEASER_CURRENT_TAG=$(VERSION) BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT} goreleaser build --clean
 
 publish: local.check ## Builds and publishes the app
-	GOVERSION=${GOVERSION} BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT} PLUGIN_PATH=${APP_DIR} goreleaser release --rm-dist
+	GOVERSION=${GOVERSION} BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT} PLUGIN_PATH=${APP_DIR} goreleaser release --clean
 
 mock.publish: local.check ## Builds and mocks app release
-	GOVERSION=${GOVERSION} BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT} PLUGIN_PATH=${APP_DIR} goreleaser release --skip-publish --rm-dist
+	GOVERSION=${GOVERSION} BUILD_ENVIRONMENT=${BUILD_ENVIRONMENT} PLUGIN_PATH=${APP_DIR} goreleaser release --skip=publish --clean
