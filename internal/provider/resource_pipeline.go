@@ -137,10 +137,12 @@ func resourcePipelineCreate(ctx context.Context, d *schema.ResourceData, meta in
 	}
 
 	pipelineCfg := gocd.PipelineConfig{
-		Name:          id,
-		Group:         utils.String(d.Get(utils.TerraformResourceGroup)),
-		PausePipeline: utils.Bool(d.Get(utils.TerraformResourcePauseOnCreation)),
-		PauseReason:   utils.String(d.Get(utils.TerraformResourcePauseReason)),
+		Name:  id,
+		Group: utils.String(d.Get(utils.TerraformResourceGroup)),
+		CreateOptions: gocd.PipelineCreateOptions{
+			PausePipeline: utils.Bool(d.Get(utils.TerraformResourcePauseOnCreation)),
+			PauseReason:   utils.String(d.Get(utils.TerraformResourcePauseReason)),
+		},
 	}
 
 	obj := render.Object(utils.String(d.Get(utils.TerraformResourceConfig)))

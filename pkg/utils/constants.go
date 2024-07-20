@@ -86,4 +86,5 @@ const (
 	TerraformResourceRetries             = "retries"
 	TerraformResourceCount               = "count"
 	TerraformResourceWaitTime            = "wait_time"
+	TerraformResourceExtensions          = "extensions"
 )

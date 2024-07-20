@@ -26,13 +26,292 @@ data "gocd_plugin_info" "kubernetes_plugin" {
 
 ### Optional
 
+- `about` (Map of String) Additional details about the plugin.
 - `bundled_plugin` (Boolean) Indicates whether the plugin is bundled with GoCD.
 - `etag` (String) Etag used to track the plugin information
+- `extensions` (Block Set) A list of extension information pertaining to the list of extensions the plugin implements. (see [below for nested schema](#nestedblock--extensions))
 - `plugin_file_location` (String) The location where the plugin is installed.
-- `status` (Map of String) The status of the plugin.
+- `status` (String) Status of the plugin. Can be one of active, invalid.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
 
+<a id="nestedblock--extensions"></a>
+### Nested Schema for `extensions`
 
+Optional:
+
+- `artifact_config_settings` (Block Set) The publish artifact configs and the list of properties that can be used to configure publish artifact config. (see [below for nested schema](#nestedblock--extensions--artifact_config_settings))
+- `auth_config_settings` (Block Set) The list of properties that can be used to configure auth configs. (see [below for nested schema](#nestedblock--extensions--auth_config_settings))
+- `cluster_profile_settings` (Block Set) The cluster profile and the list of properties required to be configured. Present in case of plugin supports defining cluster profiles. (see [below for nested schema](#nestedblock--extensions--cluster_profile_settings))
+- `display_name` (String) The descriptive name of the plugin.
+- `elastic_agent_profile_settings` (Block Set) The elastic agent profile and the list of properties required to be configured. (see [below for nested schema](#nestedblock--extensions--elastic_agent_profile_settings))
+- `fetch_artifact_settings` (Block Set) The fetch artifact config and the list of properties that can be used to configure fetch artifact config. (see [below for nested schema](#nestedblock--extensions--fetch_artifact_settings))
+- `package_settings` (Block Set) The list of properties that can be used to configure a package material (see [below for nested schema](#nestedblock--extensions--package_settings))
+- `plugin_settings` (Block Set) The plugin and the list of properties required to be configured. (see [below for nested schema](#nestedblock--extensions--plugin_settings))
+- `repository_settings` (Block Set) The list of properties that can be used to configure package repositories. (see [below for nested schema](#nestedblock--extensions--repository_settings))
+- `role_settings` (Block Set) The list of properties that can be used to configure role configs. (see [below for nested schema](#nestedblock--extensions--role_settings))
+- `scm_settings` (Block Set) List of properties that can be used to configure the pluggable scm material. (see [below for nested schema](#nestedblock--extensions--scm_settings))
+- `secret_config_settings` (Block Set) List of properties that can be used to configure the secret configs. (see [below for nested schema](#nestedblock--extensions--secret_config_settings))
+- `store_config_settings` (Block Set) The list of properties that can be used to configure the artifact store. (see [below for nested schema](#nestedblock--extensions--store_config_settings))
+- `task_settings` (Block Set) The list of properties that can be used to configure the pluggable task. (see [below for nested schema](#nestedblock--extensions--task_settings))
+- `type` (String) The type of the plugin extension.
+
+<a id="nestedblock--extensions--artifact_config_settings"></a>
+### Nested Schema for `extensions.artifact_config_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--artifact_config_settings--configurations))
+
+<a id="nestedblock--extensions--artifact_config_settings--configurations"></a>
+### Nested Schema for `extensions.artifact_config_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--auth_config_settings"></a>
+### Nested Schema for `extensions.auth_config_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--auth_config_settings--configurations))
+
+<a id="nestedblock--extensions--auth_config_settings--configurations"></a>
+### Nested Schema for `extensions.auth_config_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--cluster_profile_settings"></a>
+### Nested Schema for `extensions.cluster_profile_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--cluster_profile_settings--configurations))
+
+<a id="nestedblock--extensions--cluster_profile_settings--configurations"></a>
+### Nested Schema for `extensions.cluster_profile_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--elastic_agent_profile_settings"></a>
+### Nested Schema for `extensions.elastic_agent_profile_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--elastic_agent_profile_settings--configurations))
+
+<a id="nestedblock--extensions--elastic_agent_profile_settings--configurations"></a>
+### Nested Schema for `extensions.elastic_agent_profile_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--fetch_artifact_settings"></a>
+### Nested Schema for `extensions.fetch_artifact_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--fetch_artifact_settings--configurations))
+
+<a id="nestedblock--extensions--fetch_artifact_settings--configurations"></a>
+### Nested Schema for `extensions.fetch_artifact_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--package_settings"></a>
+### Nested Schema for `extensions.package_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--package_settings--configurations))
+
+<a id="nestedblock--extensions--package_settings--configurations"></a>
+### Nested Schema for `extensions.package_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--plugin_settings"></a>
+### Nested Schema for `extensions.plugin_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--plugin_settings--configurations))
+
+<a id="nestedblock--extensions--plugin_settings--configurations"></a>
+### Nested Schema for `extensions.plugin_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--repository_settings"></a>
+### Nested Schema for `extensions.repository_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--repository_settings--configurations))
+
+<a id="nestedblock--extensions--repository_settings--configurations"></a>
+### Nested Schema for `extensions.repository_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--role_settings"></a>
+### Nested Schema for `extensions.role_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--role_settings--configurations))
+
+<a id="nestedblock--extensions--role_settings--configurations"></a>
+### Nested Schema for `extensions.role_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--scm_settings"></a>
+### Nested Schema for `extensions.scm_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--scm_settings--configurations))
+
+<a id="nestedblock--extensions--scm_settings--configurations"></a>
+### Nested Schema for `extensions.scm_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--secret_config_settings"></a>
+### Nested Schema for `extensions.secret_config_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--secret_config_settings--configurations))
+
+<a id="nestedblock--extensions--secret_config_settings--configurations"></a>
+### Nested Schema for `extensions.secret_config_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--store_config_settings"></a>
+### Nested Schema for `extensions.store_config_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--store_config_settings--configurations))
+
+<a id="nestedblock--extensions--store_config_settings--configurations"></a>
+### Nested Schema for `extensions.store_config_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
+
+
+
+<a id="nestedblock--extensions--task_settings"></a>
+### Nested Schema for `extensions.task_settings`
+
+Optional:
+
+- `configurations` (Block Set) List of configuration required to configure the plugin settings. (see [below for nested schema](#nestedblock--extensions--task_settings--configurations))
+
+<a id="nestedblock--extensions--task_settings--configurations"></a>
+### Nested Schema for `extensions.task_settings.configurations`
+
+Optional:
+
+- `encrypted_value` (String) The encrypted value of the property.
+- `is_secure` (Boolean) Specify whether the given property is secure or not.
+- `key` (String) The name of the property key.
+- `metadata` (Map of Boolean) Metadata for the configuration property.
+- `value` (String) The value of the property
