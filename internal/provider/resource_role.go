@@ -162,7 +162,7 @@ func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 		roleCfg.Attributes.AuthConfigID = utils.String(d.Get(utils.TerraformResourceAuthConfigID))
 		roleCfg.Attributes.Properties = getPluginConfiguration(d.Get(utils.TerraformResourceProperties))
 	case "gocd":
-		roleAttr := gocd.RoleAttribute{Users: utils.GetSlice(d.Get(utils.TerraformResourceType).([]interface{}))}
+		roleAttr := gocd.RoleAttribute{Users: utils.GetSlice(d.Get(utils.TerraformResourceUsers).([]interface{}))}
 		roleCfg.Attributes = roleAttr
 	default:
 		return diag.Errorf("unknown role type '%s'", roleType)
