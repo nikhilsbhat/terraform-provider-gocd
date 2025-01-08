@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/google/go-cmp/cmp"
@@ -176,7 +175,7 @@ func resourceConfigRepoDelete(_ context.Context, d *schema.ResourceData, meta in
 func flattenMapSlice(configs interface{}) ([]map[string]string, error) {
 	var rules []map[string]string
 	if err := mapstructure.Decode(configs, &rules); err != nil {
-		return nil, fmt.Errorf(err.Error())
+		return nil, err
 	}
 
 	return rules, nil

@@ -143,24 +143,37 @@ func resourcePipelineGroupDelete(_ context.Context, d *schema.ResourceData, meta
 }
 
 func getPipelineGroupAuthorizationConfig(authConfig interface{}) gocd.PipelineGroupAuthorizationConfig {
-	var authoRisationConfig gocd.PipelineGroupAuthorizationConfig
+	var flattenedView, flattenedAdmins, flattenedOperate map[string]interface{}
+
+	var authorisationConfig gocd.PipelineGroupAuthorizationConfig
 	flattenedAuthConfig := authConfig.(*schema.Set).List()[0].(map[string]interface{})
-	flattenedView := flattenedAuthConfig[utils.TerraformResourceView].(*schema.Set).List()[0].(map[string]interface{})
-	flattenedOperate := flattenedAuthConfig[utils.TerraformResourceOperate].(*schema.Set).List()[0].(map[string]interface{})
-	flattenedAdmins := flattenedAuthConfig[utils.TerraformResourceAdmins].(*schema.Set).List()[0].(map[string]interface{})
 
-	authoRisationConfig.Admins = gocd.AuthorizationConfig{
-		Roles: utils.GetSlice(flattenedAdmins[utils.TerraformResourceRoles].([]interface{})),
-		Users: utils.GetSlice(flattenedAdmins[utils.TerraformResourceUsers].([]interface{})),
-	}
-	authoRisationConfig.View = gocd.AuthorizationConfig{
-		Roles: utils.GetSlice(flattenedView[utils.TerraformResourceRoles].([]interface{})),
-		Users: utils.GetSlice(flattenedView[utils.TerraformResourceUsers].([]interface{})),
-	}
-	authoRisationConfig.Operate = gocd.AuthorizationConfig{
-		Roles: utils.GetSlice(flattenedOperate[utils.TerraformResourceRoles].([]interface{})),
-		Users: utils.GetSlice(flattenedOperate[utils.TerraformResourceUsers].([]interface{})),
+	if len(flattenedAuthConfig[utils.TerraformResourceView].(*schema.Set).List()) > 0 {
+		flattenedView = flattenedAuthConfig[utils.TerraformResourceView].(*schema.Set).List()[0].(map[string]interface{})
+
+		authorisationConfig.View = gocd.AuthorizationConfig{
+			Roles: utils.GetSlice(flattenedView[utils.TerraformResourceRoles].([]interface{})),
+			Users: utils.GetSlice(flattenedView[utils.TerraformResourceUsers].([]interface{})),
+		}
 	}
 
-	return authoRisationConfig
+	if len(flattenedAuthConfig[utils.TerraformResourceOperate].(*schema.Set).List()) > 0 {
+		flattenedOperate = flattenedAuthConfig[utils.TerraformResourceOperate].(*schema.Set).List()[0].(map[string]interface{})
+
+		authorisationConfig.Operate = gocd.AuthorizationConfig{
+			Roles: utils.GetSlice(flattenedOperate[utils.TerraformResourceRoles].([]interface{})),
+			Users: utils.GetSlice(flattenedOperate[utils.TerraformResourceUsers].([]interface{})),
+		}
+	}
+
+	if len(flattenedAuthConfig[utils.TerraformResourceAdmins].(*schema.Set).List()) > 0 {
+		flattenedAdmins = flattenedAuthConfig[utils.TerraformResourceAdmins].(*schema.Set).List()[0].(map[string]interface{})
+
+		authorisationConfig.Admins = gocd.AuthorizationConfig{
+			Roles: utils.GetSlice(flattenedAdmins[utils.TerraformResourceRoles].([]interface{})),
+			Users: utils.GetSlice(flattenedAdmins[utils.TerraformResourceUsers].([]interface{})),
+		}
+	}
+
+	return authorisationConfig
 }

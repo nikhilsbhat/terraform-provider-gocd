@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -14,7 +15,7 @@ func GetRandomID() (string, error) {
 	bytes := make([]byte, randInt)
 	n, err := rand.Reader.Read(bytes)
 	if n != randInt {
-		return "", fmt.Errorf("generated insufficient random bytes")
+		return "", errors.New("generated insufficient random bytes")
 	}
 	if err != nil {
 		return "", fmt.Errorf("error generating random bytes: %w", err)

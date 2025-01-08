@@ -195,7 +195,7 @@ func getEnvironments(configs interface{}) ([]gocd.EnvVars, error) {
 	var envVars []gocd.EnvVars
 	envs := configs.(*schema.Set).List()
 	if err := mapstructure.Decode(envs, &envVars); err != nil {
-		return nil, fmt.Errorf(err.Error())
+		return nil, err
 	}
 
 	return envVars, nil

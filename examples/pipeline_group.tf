@@ -17,6 +17,25 @@ resource "gocd_pipeline_group" "sample_group_2" {
   }
 }
 
+resource "gocd_pipeline_group" "sample_group_3" {
+  name      = "sample-group-3"
+  pipelines = ["testing"]
+  authorization {
+    view {
+      users = ["nikhil"]
+      roles = ["sample"]
+    }
+    operate {
+      users = ["nikhil"]
+      roles = ["sample"]
+    }
+    admins {
+      users = ["nikhil"]
+      roles = ["sample"]
+    }
+  }
+}
+
 data "gocd_pipeline_group" "sample_group" {
   group_id = "sample-group"
 }
