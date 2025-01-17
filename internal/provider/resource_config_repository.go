@@ -33,8 +33,14 @@ func resourceConfigRepository() *schema.Resource {
 				ForceNew:    true,
 				Description: "The name of the config repo plugin.",
 			},
-			"material":      materialSchema(),
-			"configuration": propertiesSchemaResource(),
+			"material": materialSchema(),
+			"configuration": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Computed:    false,
+				Description: "The list of configuration properties that represent the configuration of config repositories.",
+				Elem:        propertiesSchemaResource().Elem,
+			},
 			"rules": {
 				Type:        schema.TypeList,
 				Optional:    true,
