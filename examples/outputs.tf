@@ -59,6 +59,10 @@ output "sample_ldap_role" {
   value = data.gocd_role.sample_ldap.properties
 }
 
+output "sample_role_2" {
+  value = data.gocd_role.sample_2
+}
+
 output "pipeline_group_movies" {
   value = data.gocd_pipeline_group.sample_group.authorization
 }

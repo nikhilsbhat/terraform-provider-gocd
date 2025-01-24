@@ -87,4 +87,6 @@ const (
 	TerraformResourceCount               = "count"
 	TerraformResourceWaitTime            = "wait_time"
 	TerraformResourceExtensions          = "extensions"
+	TerraformResourceSystemAdmin         = "system_admin"
+	TerraformResourceIsAdmin             = "is_admin"
 )

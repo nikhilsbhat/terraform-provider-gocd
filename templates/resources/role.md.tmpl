@@ -67,8 +67,9 @@ resource "gocd_role" "sample_ldap" {
 ### Optional
 
 - `auth_config_id` (String) The authorization configuration identifier.
-- `etag` (String) Etag used to track the role
-- `properties` (Block Set) The list of configuration properties that represent the configuration of the profile. (see [below for nested schema](#nestedblock--properties))
+- `etag` (String) Etag used to track the role.
+- `properties` (Block Set) The list of configuration properties that represent the configuration of the profile. (see [below for nested schema](#nestedblock--properties)).
+- `system_admin` (Boolean) Enable if the role should be set as admin.
 - `users` (List of String) The list of users belongs to the role.
 
 ### Read-Only
@@ -84,8 +85,8 @@ Required:
 
 Optional:
 
-- `encrypted_value` (String) The encrypted value of the property
+- `encrypted_value` (String) The encrypted value of the property.
 - `is_secure` (Boolean) Specify whether the given property is secure or not. If true and encrypted_value is not specified, GoCD will store the value in encrypted format.
-- `value` (String) The value of the property
+- `value` (String) The value of the property.
 
 

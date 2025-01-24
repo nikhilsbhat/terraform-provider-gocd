@@ -398,7 +398,7 @@ func flattenPluginSettingAttributeSchema(extensions *gocd.PluginSettingAttribute
 	}
 }
 
-func flattenPluginConfigurations(configurations []gocd.PluginConfiguration) []map[string]interface{} {
+func flattenPluginConfigurations(configurations []*gocd.PluginConfiguration) []map[string]interface{} {
 	pluginConfigurations := make([]map[string]interface{}, 0)
 
 	for _, configuration := range configurations {

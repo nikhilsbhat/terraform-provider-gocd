@@ -30,6 +30,7 @@ data "gocd_role" "sample" {
 - `etag` (String) Etag used to track the role
 - `policy` (List of Map of String) Policy is fine-grained permissions attached to the users belonging to the current role.
 - `properties` (Block List) Attributes are used to describes the configuration for gocd role or plugin role. (see [below for nested schema](#nestedblock--properties))
+- `system_admin` (Boolean) Enabled if the role is admin
 - `type` (String) Type of the role. Use GoCD to create core role and plugin to create plugin role.
 - `users` (List of String) The list of users belongs to the role.
 

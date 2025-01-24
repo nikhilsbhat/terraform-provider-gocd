@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strings"
 
@@ -28,6 +29,13 @@ func resourceRole() *schema.Resource {
 				Computed:    false,
 				ForceNew:    true,
 				Description: "The name of the role.",
+			},
+			"system_admin": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				ForceNew:    false,
+				Computed:    false,
+				Description: "Enable if the role should be set as admin",
 			},
 			"type": {
 				Type:        schema.TypeString,
@@ -111,6 +119,10 @@ func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, meta interf
 		return diag.Errorf("creating role '%s' of type '%s' errored with %v", id, roleCfg.Type, err)
 	}
 
+	if err = updateAdmin(defaultConfig, d); err != nil {
+		return diag.Errorf("%v", err)
+	}
+
 	d.SetId(id)
 
 	return resourceRoleRead(ctx, d, meta)
@@ -119,7 +131,7 @@ func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, meta interf
 func resourceRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	name := utils.String(d.Get(utils.TerraformResourceName))
+	name := d.Id()
 	response, err := defaultConfig.GetRole(name)
 	if err != nil {
 		return diag.Errorf("fetching role %s errored with: %v", name, err)
@@ -137,7 +149,8 @@ func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 
 	if !d.HasChange(utils.TerraformResourceProperties) &&
 		!d.HasChange(utils.TerraformResourcePolicy) &&
-		!d.HasChange(utils.TerraformResourceUsers) {
+		!d.HasChange(utils.TerraformResourceUsers) &&
+		!d.HasChange(utils.TerraformResourceSystemAdmin) {
 		log.Printf("nothing to update so skipping")
 
 		return nil
@@ -172,6 +185,10 @@ func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 		return diag.Errorf("updating role '%s' of type '%s' errored with %v", roleCfg.Name, roleCfg.Type, err)
 	}
 
+	if err = updateAdmin(defaultConfig, d); err != nil {
+		return diag.Errorf("%v", err)
+	}
+
 	return resourceRoleRead(ctx, d, meta)
 }
 
@@ -191,6 +208,40 @@ func resourceRoleDelete(_ context.Context, d *schema.ResourceData, meta interfac
 	}
 
 	d.SetId("")
+
+	return nil
+}
+
+// Ensures the role is added as a system admin in GoCD.
+func updateAdmin(defaultConfig gocd.GoCd, d *schema.ResourceData) error {
+	resourceName := utils.String(d.Get(utils.TerraformResourceName))
+	isAdmin := utils.Bool(d.Get(utils.TerraformResourceSystemAdmin))
+
+	admins, err := defaultConfig.GetSystemAdmins()
+	if err != nil {
+		return fmt.Errorf("fetching system admins errored with %w", err)
+	}
+
+	isAlreadyAdmin := utils.Contains(admins.Roles, resourceName)
+
+	if isAlreadyAdmin == isAdmin {
+		return nil
+	}
+
+	addNRemove := gocd.AddRemoves{}
+	if isAdmin {
+		log.Printf("Adding role '%s' to system admins", resourceName)
+		addNRemove.Add = []string{resourceName}
+	} else {
+		log.Printf("Removing role '%s' from system admins", resourceName)
+		addNRemove.Remove = []string{resourceName}
+	}
+
+	operationOptions := gocd.Operations{Roles: addNRemove}
+
+	if _, err = defaultConfig.UpdateSystemAdminsBulk(operationOptions); err != nil {
+		return fmt.Errorf("updating system admins bulk errored with %w", err)
+	}
 
 	return nil
 }

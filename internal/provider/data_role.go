@@ -21,6 +21,13 @@ func dataSourceRole() *schema.Resource {
 				ForceNew:    true,
 				Description: "The name of the role.",
 			},
+			"system_admin": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Computed:    true,
+				ForceNew:    false,
+				Description: "Enabled if the role is admin",
+			},
 			"type": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -71,11 +78,11 @@ func dataSourceRole() *schema.Resource {
 
 func datasourceRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
-
+	resourceName := utils.String(d.Get(utils.TerraformResourceName))
 	id := d.Id()
 
 	if len(id) == 0 {
-		name := utils.String(d.Get(utils.TerraformResourceName))
+		name := resourceName
 		id = name
 	}
 
@@ -120,6 +127,17 @@ func datasourceRoleRead(_ context.Context, d *schema.ResourceData, meta interfac
 		}
 	default:
 		return diag.Errorf("unknown role type '%s'", roleType)
+	}
+
+	admins, err := defaultConfig.GetSystemAdmins()
+	if err != nil {
+		return diag.Errorf("fetching system admins errored with %s", err)
+	}
+
+	foundAdmin := utils.Contains(admins.Roles, resourceName)
+
+	if err = d.Set(utils.TerraformResourceSystemAdmin, foundAdmin); err != nil {
+		return diag.Errorf("setting '%s' errored with '%s'", utils.TerraformResourceEtag, err)
 	}
 
 	d.SetId(id)

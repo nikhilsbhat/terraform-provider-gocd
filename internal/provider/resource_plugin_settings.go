@@ -96,7 +96,7 @@ func resourcePluginsSettingsCreate(ctx context.Context, d *schema.ResourceData, 
 
 	pluginSettings := gocd.PluginSettings{
 		ID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
-		Configuration: getPluginConfiguration(d.Get(utils.TerraformResourcePluginConfiguration)),
+		Configuration: getPluginConfigurationPTR(d.Get(utils.TerraformResourcePluginConfiguration)),
 	}
 
 	_, err := defaultConfig.CreatePluginSettings(pluginSettings)
@@ -135,7 +135,7 @@ func resourcePluginsSettingsUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	pluginSettings := gocd.PluginSettings{
 		ID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
-		Configuration: getPluginConfiguration(d.Get(utils.TerraformResourcePluginConfiguration)),
+		Configuration: getPluginConfigurationPTR(d.Get(utils.TerraformResourcePluginConfiguration)),
 		ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
 	}
 
@@ -156,7 +156,7 @@ func resourcePluginsSettingsDelete(_ context.Context, d *schema.ResourceData, me
 
 	pluginSettings := gocd.PluginSettings{
 		ID:            utils.String(d.Get(utils.TerraformResourcePluginID)),
-		Configuration: []gocd.PluginConfiguration{},
+		Configuration: []*gocd.PluginConfiguration{},
 		ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
 	}
 
@@ -168,6 +168,23 @@ func resourcePluginsSettingsDelete(_ context.Context, d *schema.ResourceData, me
 	d.SetId("")
 
 	return nil
+}
+
+func getPluginConfigurationPTR(configs interface{}) []*gocd.PluginConfiguration {
+	pluginsConfigurations := make([]*gocd.PluginConfiguration, 0)
+	for i, config := range configs.(*schema.Set).List() {
+		v := config.(map[string]interface{})
+		pluginsConfigurations = append(pluginsConfigurations, &gocd.PluginConfiguration{
+			Key:            utils.String(v[utils.TerraformResourceKey]),
+			Value:          utils.String(v[utils.TerraformResourceValue]),
+			EncryptedValue: utils.String(v[utils.TerraformResourceENCValue]),
+		})
+		if isSecure, ok := v[utils.TerraformResourceIsSecure]; ok {
+			pluginsConfigurations[i].IsSecure = utils.Bool(isSecure)
+		}
+	}
+
+	return pluginsConfigurations
 }
 
 func getPluginConfiguration(configs interface{}) []gocd.PluginConfiguration {

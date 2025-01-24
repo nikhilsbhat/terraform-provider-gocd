@@ -84,3 +84,14 @@ func String(value interface{}) string {
 func Bool(value interface{}) bool {
 	return value.(bool)
 }
+
+// Contains returns true if string is part of slice.
+func Contains(slice []string, str string) bool {
+	for _, v := range slice {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
