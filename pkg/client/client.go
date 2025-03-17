@@ -101,7 +101,15 @@ type retryConfig struct {
 }
 
 func getRetryConfig(retryConfigs interface{}) retryConfig {
-	flattenedRetryConfigs := retryConfigs.(*schema.Set).List()[0].(map[string]interface{})
+	retrySet := retryConfigs.(*schema.Set).List()
+	if len(retrySet) == 0 {
+		return retryConfig{
+			count:    0,
+			waitTime: 0,
+		}
+	}
+
+	flattenedRetryConfigs := retrySet[0].(map[string]interface{})
 
 	return retryConfig{
 		count:    flattenedRetryConfigs[utils.TerraformResourceCount].(int),
