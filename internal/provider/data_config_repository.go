@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -36,19 +37,19 @@ func dataSourceConfigRepositoryRead(_ context.Context, d *schema.ResourceData, m
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourcePluginID, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceMaterial, flattenMaterial(response.Material)); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceMaterial, err)
+	flattened := flattenMaterialRead(response.Material)
+
+	if err = d.Set("material", flattened); err != nil {
+		return diag.Errorf("setting material errored with: %v", err)
 	}
 
 	flattenedConfiguration, err := utils.MapSlice(response.Configuration)
 	if err != nil {
-		d.SetId("")
-
 		return diag.Errorf("errored while flattening Configuration obtained: %v", err)
 	}
 
 	if err = d.Set(utils.TerraformResourceConfiguration, flattenedConfiguration); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourcePluginConfiguration, err)
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceConfiguration, err)
 	}
 
 	if err = d.Set(utils.TerraformResourceRules, response.Rules); err != nil {
@@ -64,25 +65,47 @@ func dataSourceConfigRepositoryRead(_ context.Context, d *schema.ResourceData, m
 	return nil
 }
 
-func flattenMaterial(material gocd.Material) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"type":        material.Type,
-			"fingerprint": material.Fingerprint,
-			"attributes":  flattenAttributes(material.Attributes),
-		},
+func flattenMaterialRead(material gocd.Material) []interface{} {
+	if reflect.DeepEqual(material, gocd.Material{}) {
+		return nil
 	}
-}
 
-func flattenAttributes(attribute gocd.Attribute) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"url":                attribute.URL,
-			"username":           attribute.Username,
-			"password":           attribute.Password,
-			"encrypted_password": attribute.EncryptedPassword,
-			"branch":             attribute.Branch,
-			"auto_update":        attribute.AutoUpdate,
-		},
+	materialMap := map[string]interface{}{
+		"type":        material.Type,
+		"fingerprint": material.Fingerprint,
 	}
+
+	if !reflect.DeepEqual(material.Attributes, gocd.Attribute{}) {
+		attrsMap := map[string]interface{}{
+			"url":                   material.Attributes.URL,
+			"username":              material.Attributes.Username,
+			"password":              material.Attributes.Password,
+			"encrypted_password":    material.Attributes.EncryptedPassword,
+			"branch":                material.Attributes.Branch,
+			"auto_update":           material.Attributes.AutoUpdate,
+			"check_externals":       material.Attributes.CheckExternals,
+			"use_tickets":           material.Attributes.UseTickets,
+			"view":                  material.Attributes.View,
+			"port":                  material.Attributes.Port,
+			"project_path":          material.Attributes.ProjectPath,
+			"domain":                material.Attributes.Domain,
+			"ref":                   material.Attributes.Ref,
+			"name":                  material.Attributes.Name,
+			"stage":                 material.Attributes.Stage,
+			"pipeline":              material.Attributes.Pipeline,
+			"ignore_for_scheduling": material.Attributes.IgnoreForScheduling,
+			"destination":           material.Attributes.Destination,
+			"invert_filter":         material.Attributes.InvertFilter,
+		}
+
+		for k, v := range attrsMap {
+			if v == nil || v == "" || v == false {
+				delete(attrsMap, k)
+			}
+		}
+
+		materialMap["attributes"] = []interface{}{attrsMap}
+	}
+
+	return []interface{}{materialMap}
 }

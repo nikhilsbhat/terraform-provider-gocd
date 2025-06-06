@@ -2,9 +2,10 @@ package provider
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"reflect"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/mitchellh/mapstructure"
@@ -45,7 +46,7 @@ func resourceConfigRepository() *schema.Resource {
 				Type:        schema.TypeList,
 				Optional:    true,
 				Computed:    false,
-				ForceNew:    true,
+				ForceNew:    false,
 				Description: "The list of rules, which allows restricting the entities that the config repo can refer to.",
 				Elem: &schema.Schema{
 					Type:        schema.TypeMap,
@@ -85,7 +86,10 @@ func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("reading rules errored with %v", err)
 	}
 
-	material := getMaterials(d.Get(utils.TerraformResourceMaterial))
+	material, err := getMaterials(d.Get(utils.TerraformResourceMaterial))
+	if err != nil {
+		return diag.Errorf("failed to parse material: %v", err)
+	}
 
 	cfg := gocd.ConfigRepo{
 		ID:            utils.String(d.Get(utils.TerraformResourceProfileID)),
@@ -101,7 +105,7 @@ func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta 
 
 	d.SetId(id)
 
-	return resourceConfigRepoRead(ctx, d, meta)
+	return dataSourceConfigRepositoryRead(ctx, d, meta)
 }
 
 func resourceConfigRepoRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -111,6 +115,29 @@ func resourceConfigRepoRead(_ context.Context, d *schema.ResourceData, meta inte
 	response, err := defaultConfig.GetConfigRepo(profileID)
 	if err != nil {
 		return diag.Errorf("getting config repo %s errored with: %v", profileID, err)
+	}
+
+	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourcePluginID, err)
+	}
+
+	flattened := flattenMaterial(response.Material)
+
+	if err = d.Set("material", flattened); err != nil {
+		return diag.Errorf("setting material errored with: %v", err)
+	}
+
+	flattenedConfiguration, err := utils.MapSlice(response.Configuration)
+	if err != nil {
+		return diag.Errorf("errored while flattening Configuration obtained: %v", err)
+	}
+
+	if err = d.Set(utils.TerraformResourceConfiguration, flattenedConfiguration); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceConfiguration, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceRules, response.Rules); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceRules, err)
 	}
 
 	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
@@ -123,40 +150,36 @@ func resourceConfigRepoRead(_ context.Context, d *schema.ResourceData, meta inte
 func resourceConfigRepoUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
-	if d.HasChange(utils.TerraformResourceMaterial) ||
-		d.HasChange(utils.TerraformResourceRules) {
-		oldCfg, newCfg := d.GetChange(utils.TerraformResourceProperties)
-
-		if cmp.Equal(oldCfg, newCfg) {
-			return nil
-		}
-
-		rules, err := flattenMapSlice(d.Get(utils.TerraformResourceRules))
-		if err != nil {
-			return diag.Errorf("reading rules errored with %v", err)
-		}
-
-		material := getMaterials(d.Get(utils.TerraformResourceMaterial))
-
-		cfg := gocd.ConfigRepo{
-			ID:       utils.String(d.Get(utils.TerraformResourceProfileID)),
-			PluginID: utils.String(d.Get(utils.TerraformResourcePluginID)),
-			Rules:    rules,
-			Material: material,
-			ETAG:     utils.String(d.Get(utils.TerraformResourceEtag)),
-		}
-
-		_, err = defaultConfig.UpdateConfigRepo(cfg)
-		if err != nil {
-			return diag.Errorf("updating config repo %s errored with: %v", cfg.ID, err)
-		}
-
-		return resourceConfigRepoRead(ctx, d, meta)
+	if !d.HasChange(utils.TerraformResourceMaterial) &&
+		!d.HasChange(utils.TerraformResourceRules) &&
+		!d.HasChange(utils.TerraformResourceConfiguration) {
+		return nil
 	}
 
-	log.Printf("nothing to update so skipping")
+	rules, err := flattenMapSlice(d.Get(utils.TerraformResourceRules))
+	if err != nil {
+		return diag.Errorf("reading rules errored with %v", err)
+	}
 
-	return nil
+	material, err := getMaterials(d.Get(utils.TerraformResourceMaterial))
+	if err != nil {
+		return diag.Errorf("failed to parse material: %v", err)
+	}
+
+	cfg := gocd.ConfigRepo{
+		ID:            utils.String(d.Get(utils.TerraformResourceProfileID)),
+		PluginID:      utils.String(d.Get(utils.TerraformResourcePluginID)),
+		Rules:         rules,
+		Material:      material,
+		Configuration: getPluginConfiguration(d.Get(utils.TerraformResourceConfiguration)),
+		ETAG:          utils.String(d.Get(utils.TerraformResourceEtag)),
+	}
+
+	if _, err = defaultConfig.UpdateConfigRepo(cfg); err != nil {
+		return diag.Errorf("updating config repo %s errored with: %v", cfg.ID, err)
+	}
+
+	return dataSourceConfigRepositoryRead(ctx, d, meta)
 }
 
 func resourceConfigRepoDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -187,17 +210,60 @@ func flattenMapSlice(configs interface{}) ([]map[string]string, error) {
 	return rules, nil
 }
 
-func getMaterials(configs interface{}) gocd.Material {
-	var material gocd.Material
-	flattenedMaterial := configs.(*schema.Set).List()[0].(map[string]interface{})
-	flattenedAttr := flattenedMaterial[utils.TerraformResourceAttr].(*schema.Set).List()[0].(map[string]interface{})
-	material = gocd.Material{
-		Type:        utils.String(flattenedMaterial[utils.TerraformResourceType]),
-		Fingerprint: utils.String(flattenedMaterial[utils.TerraformResourceFgPrint]),
-		Attributes: gocd.Attribute{
+func getMaterials(configs interface{}) (gocd.Material, error) {
+	if set, ok := configs.(*schema.Set); ok {
+		configs = set.List()
+	}
+
+	materialList, ok := configs.([]interface{})
+	if !ok {
+		return gocd.Material{}, fmt.Errorf("expected []interface{} or *schema.Set, got %T", configs)
+	}
+
+	if len(materialList) == 0 {
+		return gocd.Material{}, nil
+	}
+
+	flattenedMaterial, ok := materialList[0].(map[string]interface{})
+	if !ok {
+		return gocd.Material{}, fmt.Errorf("expected map[string]interface{} for material, got %T", materialList[0])
+	}
+
+	attrRaw := flattenedMaterial["attributes"]
+	if attrRaw == nil {
+		return gocd.Material{}, nil
+	}
+
+	var attrList []interface{}
+	if set, ok := attrRaw.(*schema.Set); ok {
+		attrList = set.List()
+	} else if list, ok := attrRaw.([]interface{}); ok {
+		attrList = list
+	} else {
+		return gocd.Material{}, fmt.Errorf("expected []interface{} or *schema.Set for attributes, got %T", attrRaw)
+	}
+
+	var flattenedAttr map[string]interface{}
+	if len(attrList) > 0 {
+		flattenedAttr, ok = attrList[0].(map[string]interface{})
+		if !ok {
+			return gocd.Material{}, fmt.Errorf("expected map[string]interface{} for attributes[0], got %T", attrList[0])
+		}
+	}
+
+	material := gocd.Material{
+		Type:        utils.String(flattenedMaterial["type"]),
+		Fingerprint: utils.String(flattenedMaterial["fingerprint"]),
+	}
+
+	if flattenedAttr != nil {
+		log.Printf("TerraformResourceAutoUpdate: %v", flattenedAttr[utils.TerraformResourceAutoUpdate])
+		log.Printf("TerraformResourceAutoUpdate Bool: %v", utils.Bool(flattenedAttr[utils.TerraformResourceAutoUpdate]))
+		log.Printf("TerraformResourceAutoUpdate Type: %T", utils.Bool(flattenedAttr[utils.TerraformResourceAutoUpdate]))
+
+		material.Attributes = gocd.Attribute{
 			URL:                 utils.String(flattenedAttr[utils.TerraformResourceURL]),
 			Username:            utils.String(flattenedAttr[utils.TerraformResourceUserName]),
-			Password:            utils.String(flattenedAttr[utils.TerraformResourcePassword]),
 			EncryptedPassword:   utils.String(flattenedAttr[utils.TerraformResourceEncryptPassword]),
 			Branch:              utils.String(flattenedAttr[utils.TerraformResourceBranch]),
 			AutoUpdate:          utils.Bool(flattenedAttr[utils.TerraformResourceAutoUpdate]),
@@ -214,8 +280,64 @@ func getMaterials(configs interface{}) gocd.Material {
 			IgnoreForScheduling: utils.Bool(flattenedAttr[utils.TerraformResourceIgnoreForScheduling]),
 			Destination:         utils.String(flattenedAttr[utils.TerraformResourceDestination]),
 			InvertFilter:        utils.Bool(flattenedAttr[utils.TerraformResourceInvertFilter]),
-		},
+		}
 	}
 
-	return material
+	return material, nil
+}
+
+func flattenMaterial(material gocd.Material) []interface{} {
+	if reflect.DeepEqual(material, gocd.Material{}) {
+		return nil
+	}
+
+	result := map[string]interface{}{
+		"type":        material.Type,
+		"fingerprint": material.Fingerprint,
+	}
+
+	attrs := make(map[string]interface{})
+	if !reflect.DeepEqual(material.Attributes, gocd.Attribute{}) {
+		for _, field := range []struct {
+			name string
+			val  string
+		}{
+			{"url", material.Attributes.URL},
+			{"username", material.Attributes.Username},
+			{"encrypted_password", material.Attributes.EncryptedPassword},
+			{"branch", material.Attributes.Branch},
+			{"view", material.Attributes.View},
+			{"port", material.Attributes.Port},
+			{"project_path", material.Attributes.ProjectPath},
+			{"domain", material.Attributes.Domain},
+			{"ref", material.Attributes.Ref},
+			{"name", material.Attributes.Name},
+			{"stage", material.Attributes.Stage},
+			{"pipeline", material.Attributes.Pipeline},
+			{"destination", material.Attributes.Destination},
+		} {
+			if field.val != "" {
+				attrs[field.name] = field.val
+			}
+		}
+
+		for _, field := range []struct {
+			name string
+			val  bool
+		}{
+			{"auto_update", material.Attributes.AutoUpdate},
+			{"check_externals", material.Attributes.CheckExternals},
+			{"use_tickets", material.Attributes.UseTickets},
+			{"ignore_for_scheduling", material.Attributes.IgnoreForScheduling},
+			{"invert_filter", material.Attributes.InvertFilter},
+		} {
+			attrs[field.name] = field.val
+		}
+	}
+
+	if len(attrs) > 0 {
+		result["attributes"] = []interface{}{attrs}
+	}
+
+	return []interface{}{result}
 }

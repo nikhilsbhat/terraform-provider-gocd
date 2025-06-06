@@ -17,11 +17,11 @@ resource "gocd_config_repository" "sample_config_repo" {
   material {
     type = "git"
     attributes {
-      url         = "https://github.com/config-repo/gocd-json-config-example.git"
-      username    = "bob"
-      password    = "aSdiFgRRZ6A="
-      branch      = "master"
-      auto_update = false
+      url                = "https://github.com/config-repo/gocd-json-config-example.git"
+      username           = "bob"
+      encrypted_password = "AES:17NGpP57xqWXpCMMRJjTYQ==:0hr/KawcCqZLYOCaYkT1dA=="
+      branch             = "main"
+      auto_update        = true
     }
   }
   rules = [

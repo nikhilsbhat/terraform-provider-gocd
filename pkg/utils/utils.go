@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"hash/crc32"
 )
 
 // GetRandomID returns a random id when invoked.
@@ -94,4 +95,30 @@ func Contains(slice []string, str string) bool {
 	}
 
 	return false
+}
+
+// StringOrDefault returns the given value if it's not empty, otherwise it returns the defaultValue.
+func StringOrDefault(value, defaultValue string) string {
+	if value == "" {
+		return defaultValue
+	}
+
+	return value
+}
+
+func BoolOrDefault(v interface{}, def bool) *bool {
+	if v == nil {
+		return &def
+	}
+
+	b, ok := v.(bool)
+	if !ok {
+		return &def
+	}
+
+	return &b
+}
+
+func HashString(s string) int {
+	return int(crc32.ChecksumIEEE([]byte(s)))
 }

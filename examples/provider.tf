@@ -2,7 +2,7 @@ terraform {
   required_providers {
     gocd = {
       source  = "hashicorp/gocd"
-      version = "~> 0.0.3"
+      version = "~> 0.1.0"
     }
   }
 }
