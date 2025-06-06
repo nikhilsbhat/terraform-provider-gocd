@@ -64,6 +64,9 @@ func resourceConfigRepository() *schema.Resource {
 				Description: "Etag used to track the config repository.",
 			},
 		},
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceConfigRepoImport,
+		},
 	}
 }
 
@@ -199,6 +202,49 @@ func resourceConfigRepoDelete(_ context.Context, d *schema.ResourceData, meta in
 	d.SetId("")
 
 	return nil
+}
+
+func resourceConfigRepoImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	defaultConfig := meta.(gocd.GoCd)
+
+	profileID := utils.String(d.Id())
+	response, err := defaultConfig.GetConfigRepo(profileID)
+	if err != nil {
+		return nil, fmt.Errorf("getting config repo %s errored with: %w", profileID, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceProfileID, profileID); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceStoreID)
+	}
+
+	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourcePluginID, err)
+	}
+
+	flattened := flattenMaterial(response.Material)
+
+	if err = d.Set("material", flattened); err != nil {
+		return nil, fmt.Errorf("setting material errored with: %w", err)
+	}
+
+	flattenedConfiguration, err := utils.MapSlice(response.Configuration)
+	if err != nil {
+		return nil, fmt.Errorf("errored while flattening Configuration obtained: %w", err)
+	}
+
+	if err = d.Set(utils.TerraformResourceConfiguration, flattenedConfiguration); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceConfiguration, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceRules, response.Rules); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceRules, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
+	}
+
+	return []*schema.ResourceData{d}, nil
 }
 
 func flattenMapSlice(configs interface{}) ([]map[string]string, error) {
