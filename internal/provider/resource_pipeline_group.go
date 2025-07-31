@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -179,27 +178,24 @@ func resourcePipelineGroupImport(_ context.Context, d *schema.ResourceData, meta
 
 func flattenPipelineGroupAuthorizationConfig(pipelineGroup gocd.PipelineGroup) []interface{} {
 	authConfig := make(map[string]interface{})
-	if !reflect.DeepEqual(pipelineGroup.Authorization, gocd.PipelineGroupAuthorizationConfig{}) {
-		if !reflect.DeepEqual(pipelineGroup.Authorization.View, gocd.AuthorizationConfig{}) {
-			view := make(map[string]interface{})
-			view["users"] = pipelineGroup.Authorization.View.Users
-			view["roles"] = pipelineGroup.Authorization.View.Roles
-			authConfig["view"] = []interface{}{view}
-		}
+	auth := pipelineGroup.Authorization
 
-		if !reflect.DeepEqual(pipelineGroup.Authorization.Operate, gocd.AuthorizationConfig{}) {
-			operate := make(map[string]interface{})
-			operate["users"] = pipelineGroup.Authorization.Operate.Users
-			operate["roles"] = pipelineGroup.Authorization.Operate.Roles
-			authConfig["operate"] = []interface{}{operate}
+	addSection := func(key string, section gocd.AuthorizationConfig) {
+		if len(section.Users) > 0 || len(section.Roles) > 0 {
+			authSection := map[string]interface{}{
+				"users": section.Users,
+				"roles": section.Roles,
+			}
+			authConfig[key] = []interface{}{authSection}
 		}
+	}
 
-		if !reflect.DeepEqual(pipelineGroup.Authorization.Admins, gocd.AuthorizationConfig{}) {
-			admins := make(map[string]interface{})
-			admins["users"] = pipelineGroup.Authorization.Admins.Users
-			admins["roles"] = pipelineGroup.Authorization.Admins.Roles
-			authConfig["admins"] = []interface{}{admins}
-		}
+	addSection("view", auth.View)
+	addSection("operate", auth.Operate)
+	addSection("admins", auth.Admins)
+
+	if len(authConfig) == 0 {
+		return nil
 	}
 
 	return []interface{}{authConfig}
