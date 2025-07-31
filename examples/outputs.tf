@@ -64,5 +64,9 @@ output "sample_role_2" {
 }
 
 output "pipeline_group_movies" {
-  value = data.gocd_pipeline_group.sample_group.authorization
+  value = data.gocd_pipeline_group.sample_group.pipelines_count
+}
+
+output "pipeline_group_movies_2" {
+  value = gocd_pipeline_group.movies.authorization
 }

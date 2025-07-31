@@ -3,7 +3,9 @@ package provider
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -45,6 +47,9 @@ func resourcePipelineGroup() *schema.Resource {
 				Optional:    true,
 				Description: "Etag used to track the pipeline group.",
 			},
+		},
+		Importer: &schema.ResourceImporter{
+			StateContext: resourcePipelineGroupImport,
 		},
 	}
 }
@@ -140,6 +145,64 @@ func resourcePipelineGroupDelete(_ context.Context, d *schema.ResourceData, meta
 	d.SetId("")
 
 	return nil
+}
+
+func resourcePipelineGroupImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	defaultConfig := meta.(gocd.GoCd)
+
+	pipelineGroupName := utils.String(d.Id())
+	response, err := defaultConfig.GetPipelineGroup(pipelineGroupName)
+	if err != nil {
+		return nil, fmt.Errorf("getting pipeline group %s errored with: %w", pipelineGroupName, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceName, pipelineGroupName); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceName)
+	}
+
+	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
+	}
+
+	if err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines)); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
+	}
+
+	flattenedAuthVar := flattenPipelineGroupAuthorizationConfig(response)
+
+	if err = d.Set(utils.TerraformResourceAuthorization, flattenedAuthVar); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAuthorization)
+	}
+
+	return []*schema.ResourceData{d}, nil
+}
+
+func flattenPipelineGroupAuthorizationConfig(pipelineGroup gocd.PipelineGroup) []interface{} {
+	authConfig := make(map[string]interface{})
+	if !reflect.DeepEqual(pipelineGroup.Authorization, gocd.PipelineGroupAuthorizationConfig{}) {
+		if !reflect.DeepEqual(pipelineGroup.Authorization.View, gocd.AuthorizationConfig{}) {
+			view := make(map[string]interface{})
+			view["users"] = pipelineGroup.Authorization.View.Users
+			view["roles"] = pipelineGroup.Authorization.View.Roles
+			authConfig["view"] = []interface{}{view}
+		}
+
+		if !reflect.DeepEqual(pipelineGroup.Authorization.Operate, gocd.AuthorizationConfig{}) {
+			operate := make(map[string]interface{})
+			operate["users"] = pipelineGroup.Authorization.Operate.Users
+			operate["roles"] = pipelineGroup.Authorization.Operate.Roles
+			authConfig["operate"] = []interface{}{operate}
+		}
+
+		if !reflect.DeepEqual(pipelineGroup.Authorization.Admins, gocd.AuthorizationConfig{}) {
+			admins := make(map[string]interface{})
+			admins["users"] = pipelineGroup.Authorization.Admins.Users
+			admins["roles"] = pipelineGroup.Authorization.Admins.Roles
+			authConfig["admins"] = []interface{}{admins}
+		}
+	}
+
+	return []interface{}{authConfig}
 }
 
 func getPipelineGroupAuthorizationConfig(authConfig interface{}) gocd.PipelineGroupAuthorizationConfig {
