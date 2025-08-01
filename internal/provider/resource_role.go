@@ -22,6 +22,9 @@ func resourceRole() *schema.Resource {
 		ReadContext:   resourceRoleRead,
 		DeleteContext: resourceRoleDelete,
 		UpdateContext: resourceRoleUpdate,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceRoleImport,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -210,6 +213,69 @@ func resourceRoleDelete(_ context.Context, d *schema.ResourceData, meta interfac
 	d.SetId("")
 
 	return nil
+}
+
+func resourceRoleImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	defaultConfig := meta.(gocd.GoCd)
+
+	roleName := utils.String(d.Id())
+	response, err := defaultConfig.GetRole(roleName)
+	if err != nil {
+		return nil, fmt.Errorf("getting pipeline group %s errored with: %w", roleName, err)
+	}
+
+	if err = d.Set(utils.TerraformResourceName, roleName); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceName)
+	}
+
+	if err = d.Set(utils.TerraformResourceType, response.Type); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceType)
+	}
+
+	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+		return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
+	}
+
+	if len(response.Policy) > 0 {
+		policies := make([]interface{}, len(response.Policy))
+		for index, policy := range response.Policy {
+			policies[index] = map[string]interface{}{}
+			for policyKey, policyValue := range policy {
+				policies[index].(map[string]interface{})[policyKey] = policyValue
+			}
+		}
+
+		if err = d.Set(utils.TerraformResourcePolicy, policies); err != nil {
+			return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourcePolicy, err)
+		}
+	}
+
+	roleType := strings.ToLower(response.Type)
+	switch roleType {
+	case "plugin":
+		if err = d.Set(utils.TerraformResourceAuthConfigID, response.Attributes.AuthConfigID); err != nil {
+			return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAuthConfigID)
+		}
+
+		flattenedProperties, err := utils.MapSlice(response.Attributes.Properties)
+		if err != nil {
+			d.SetId("")
+
+			return nil, fmt.Errorf("errored while flattening properties variable obtained: %w", err)
+		}
+
+		if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+			return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceProperties)
+		}
+	case "gocd":
+		if err = d.Set(utils.TerraformResourceUsers, response.Attributes.Users); err != nil {
+			return nil, fmt.Errorf(settingAttrErrorTmp, utils.TerraformResourceUsers, err)
+		}
+	default:
+		return nil, fmt.Errorf("unknown role type '%s'", roleType)
+	}
+
+	return []*schema.ResourceData{d}, nil
 }
 
 // Ensures the role is added as a system admin in GoCD.

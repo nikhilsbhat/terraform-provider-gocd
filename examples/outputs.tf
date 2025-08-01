@@ -56,7 +56,7 @@ output "sample_role" {
 }
 
 output "sample_ldap_role" {
-  value = data.gocd_role.sample_ldap.properties
+  value = gocd_role.sample_ldap.properties
 }
 
 output "sample_role_2" {
