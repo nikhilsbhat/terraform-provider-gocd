@@ -39,7 +39,7 @@ func dataSourceEnvironment() *schema.Resource {
 	}
 }
 
-func datasourceEnvironmentRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceEnvironmentRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -56,7 +56,8 @@ func datasourceEnvironmentRead(_ context.Context, d *schema.ResourceData, meta i
 		return diag.Errorf("getting environment %s errored with: %v", envName, err)
 	}
 
-	if err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines)); err != nil {
+	err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines))
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
 	}
 
@@ -67,11 +68,13 @@ func datasourceEnvironmentRead(_ context.Context, d *schema.ResourceData, meta i
 		return diag.Errorf("errored while flattening environment variable obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformResourceEnvVar, flattenedEnvVars); err != nil {
+	err = d.Set(utils.TerraformResourceEnvVar, flattenedEnvVars)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceEnvVar)
 	}
 
-	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+	err = d.Set(utils.TerraformResourceEtag, response.ETAG)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
@@ -80,8 +83,8 @@ func datasourceEnvironmentRead(_ context.Context, d *schema.ResourceData, meta i
 	return nil
 }
 
-func flattenPipelines(pipelines []gocd.Pipeline) []interface{} {
-	pipeline := make([]interface{}, len(pipelines))
+func flattenPipelines(pipelines []gocd.Pipeline) []any {
+	pipeline := make([]any, len(pipelines))
 	for i, name := range pipelines {
 		pipeline[i] = name.Name
 	}

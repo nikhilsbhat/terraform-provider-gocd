@@ -62,7 +62,7 @@ var (
 	defaultDelay = 5
 )
 
-func resourceBackupScheduleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBackupScheduleCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -77,6 +77,7 @@ func resourceBackupScheduleCreate(ctx context.Context, d *schema.ResourceData, m
 
 		return diag.Errorf("errored while fetching randomID %v", err)
 	}
+
 	id = newID
 
 	if !utils.Bool(d.Get(utils.TerraformResourceSchedule)) {
@@ -106,7 +107,7 @@ func resourceBackupScheduleCreate(ctx context.Context, d *schema.ResourceData, m
 	return resourceBackupScheduleRead(ctx, d, meta)
 }
 
-func resourceBackupScheduleRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBackupScheduleRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	retryAfter := d.Get(utils.TerraformResourceRetryAfter).(int)
@@ -117,8 +118,11 @@ func resourceBackupScheduleRead(_ context.Context, d *schema.ResourceData, meta 
 	delay := time.Duration(delayCount) * time.Second
 
 	time.Sleep(time.Duration(retryAfter) * time.Second)
+
 	currentRetryCount := 0
+
 	var latestBackupStatus string
+
 	for {
 		if currentRetryCount > backupRetry {
 			return diag.Errorf("maximum retry count of '%d' crossed with current count '%d', still backup is not ready yet with status '%s'. Exiting",
@@ -148,14 +152,16 @@ func resourceBackupScheduleRead(_ context.Context, d *schema.ResourceData, meta 
 		}
 
 		latestBackupStatus = response.Status
+
 		time.Sleep(delay)
+
 		currentRetryCount++
 	}
 
 	return nil
 }
 
-func resourceBackupScheduleDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
+func resourceBackupScheduleDelete(_ context.Context, d *schema.ResourceData, _ any) diag.Diagnostics {
 	id := d.Id()
 	if len(d.Id()) == 0 {
 		return diag.Errorf("resource with the ID '%s' not found", id)

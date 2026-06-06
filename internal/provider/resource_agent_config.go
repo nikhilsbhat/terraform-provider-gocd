@@ -70,7 +70,7 @@ func resourceAgentConfig() *schema.Resource {
 	}
 }
 
-func resourceAgentConfigCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAgentConfigCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -87,12 +87,13 @@ func resourceAgentConfigCreate(ctx context.Context, d *schema.ResourceData, meta
 	cfg := gocd.Agent{
 		ID:           id,
 		Name:         utils.String(d.Get(utils.TerraformResourceHostname)),
-		Environments: utils.GetSlice(d.Get(utils.TerraformResourceEnvironments).([]interface{})),
-		Resources:    utils.GetSlice(d.Get(utils.TerraformResourceResources).([]interface{})),
+		Environments: utils.GetSlice(d.Get(utils.TerraformResourceEnvironments).([]any)),
+		Resources:    utils.GetSlice(d.Get(utils.TerraformResourceResources).([]any)),
 		ConfigState:  utils.String(d.Get(utils.TerraformResourceAgentConfigState)),
 	}
 
-	if err := defaultConfig.UpdateAgent(cfg); err != nil {
+	err := defaultConfig.UpdateAgent(cfg)
+	if err != nil {
 		return diag.Errorf("updating agent '%s' errored with %v", id, err)
 	}
 
@@ -101,7 +102,7 @@ func resourceAgentConfigCreate(ctx context.Context, d *schema.ResourceData, meta
 	return resourceAgentConfigRead(ctx, d, meta)
 }
 
-func resourceAgentConfigRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAgentConfigRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	response, err := defaultConfig.GetAgent(d.Id())
@@ -109,18 +110,20 @@ func resourceAgentConfigRead(_ context.Context, d *schema.ResourceData, meta int
 		return diag.Errorf("fetching information of agent '%s' errored with %v", d.Id(), err)
 	}
 
-	if err = d.Set(utils.TerraformResourceIPAddress, response.IPAddress); err != nil {
+	err = d.Set(utils.TerraformResourceIPAddress, response.IPAddress)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceIPAddress, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceOperatingSystem, response.OS); err != nil {
+	err = d.Set(utils.TerraformResourceOperatingSystem, response.OS)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceOperatingSystem, err)
 	}
 
 	return nil
 }
 
-func resourceAgentConfigDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
+func resourceAgentConfigDelete(_ context.Context, d *schema.ResourceData, _ any) diag.Diagnostics {
 	id := d.Id()
 	if len(d.Id()) == 0 {
 		return diag.Errorf("resource with the ID '%s' not found", id)

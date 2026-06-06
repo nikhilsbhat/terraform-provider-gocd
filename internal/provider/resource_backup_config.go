@@ -45,7 +45,7 @@ func resourceBackupConfig() *schema.Resource {
 	}
 }
 
-func resourceBackupConfigCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBackupConfigCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -75,7 +75,7 @@ func resourceBackupConfigCreate(ctx context.Context, d *schema.ResourceData, met
 	return resourceBackupConfigRead(ctx, d, meta)
 }
 
-func resourceBackupConfigRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBackupConfigRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	response, err := defaultConfig.GetBackupConfig()
@@ -102,7 +102,7 @@ func resourceBackupConfigRead(_ context.Context, d *schema.ResourceData, meta in
 	return nil
 }
 
-func resourceBackupConfigUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBackupConfigUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChanges(
@@ -130,7 +130,7 @@ func resourceBackupConfigUpdate(ctx context.Context, d *schema.ResourceData, met
 	return resourceBackupConfigRead(ctx, d, meta)
 }
 
-func resourceBackupConfigDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceBackupConfigDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

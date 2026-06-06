@@ -51,7 +51,7 @@ func dataSourceAuthConfig() *schema.Resource {
 	}
 }
 
-func datasourceAuthConfigRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceAuthConfigRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -68,11 +68,13 @@ func datasourceAuthConfigRead(_ context.Context, d *schema.ResourceData, meta in
 		return diag.Errorf("getting authorization configuration %s errored with: %v", profileID, err)
 	}
 
-	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+	err = d.Set(utils.TerraformResourcePluginID, response.PluginID)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginID)
 	}
 
-	if err = d.Set(utils.TerraformResourceAllowKnownUser, response.AllowOnlyKnownUsers); err != nil {
+	err = d.Set(utils.TerraformResourceAllowKnownUser, response.AllowOnlyKnownUsers)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAllowKnownUser)
 	}
 
@@ -83,11 +85,13 @@ func datasourceAuthConfigRead(_ context.Context, d *schema.ResourceData, meta in
 		return diag.Errorf("errored while flattening Properties obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+	err = d.Set(utils.TerraformResourceProperties, flattenedProperties)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceProperties)
 	}
 
-	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+	err = d.Set(utils.TerraformResourceEtag, response.ETAG)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 

@@ -81,7 +81,7 @@ func resourceRole() *schema.Resource {
 	}
 }
 
-func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -113,7 +113,7 @@ func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, meta interf
 		roleCfg.Attributes.AuthConfigID = utils.String(d.Get(utils.TerraformResourceAuthConfigID))
 		roleCfg.Attributes.Properties = getPluginConfiguration(d.Get(utils.TerraformResourceProperties))
 	case "gocd":
-		roleCfg.Attributes = gocd.RoleAttribute{Users: utils.GetSlice(d.Get(utils.TerraformResourceUsers).([]interface{}))}
+		roleCfg.Attributes = gocd.RoleAttribute{Users: utils.GetSlice(d.Get(utils.TerraformResourceUsers).([]any))}
 	default:
 		return diag.Errorf("unknown role type '%s'", roleType)
 	}
@@ -131,10 +131,11 @@ func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, meta interf
 	return resourceRoleRead(ctx, d, meta)
 }
 
-func resourceRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRoleRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	name := d.Id()
+
 	response, err := defaultConfig.GetRole(name)
 	if err != nil {
 		return diag.Errorf("fetching role %s errored with: %v", name, err)
@@ -147,7 +148,7 @@ func resourceRoleRead(_ context.Context, d *schema.ResourceData, meta interface{
 	return nil
 }
 
-func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChange(utils.TerraformResourceProperties) &&
@@ -178,7 +179,7 @@ func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 		roleCfg.Attributes.AuthConfigID = utils.String(d.Get(utils.TerraformResourceAuthConfigID))
 		roleCfg.Attributes.Properties = getPluginConfiguration(d.Get(utils.TerraformResourceProperties))
 	case "gocd":
-		roleAttr := gocd.RoleAttribute{Users: utils.GetSlice(d.Get(utils.TerraformResourceUsers).([]interface{}))}
+		roleAttr := gocd.RoleAttribute{Users: utils.GetSlice(d.Get(utils.TerraformResourceUsers).([]any))}
 		roleCfg.Attributes = roleAttr
 	default:
 		return diag.Errorf("unknown role type '%s'", roleType)
@@ -195,7 +196,7 @@ func resourceRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interf
 	return resourceRoleRead(ctx, d, meta)
 }
 
-func resourceRoleDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceRoleDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -215,10 +216,11 @@ func resourceRoleDelete(_ context.Context, d *schema.ResourceData, meta interfac
 	return nil
 }
 
-func resourceRoleImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceRoleImport(_ context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	roleName := utils.String(d.Id())
+
 	response, err := defaultConfig.GetRole(roleName)
 	if err != nil {
 		return nil, fmt.Errorf("getting pipeline group %s errored with: %w", roleName, err)
@@ -237,11 +239,11 @@ func resourceRoleImport(_ context.Context, d *schema.ResourceData, meta interfac
 	}
 
 	if len(response.Policy) > 0 {
-		policies := make([]interface{}, len(response.Policy))
+		policies := make([]any, len(response.Policy))
 		for index, policy := range response.Policy {
-			policies[index] = map[string]interface{}{}
+			policies[index] = map[string]any{}
 			for policyKey, policyValue := range policy {
-				policies[index].(map[string]interface{})[policyKey] = policyValue
+				policies[index].(map[string]any)[policyKey] = policyValue
 			}
 		}
 
@@ -295,6 +297,7 @@ func updateAdmin(defaultConfig gocd.GoCd, d *schema.ResourceData) error {
 	}
 
 	addNRemove := gocd.AddRemoves{}
+
 	if isAdmin {
 		log.Printf("Adding role '%s' to system admins", resourceName)
 		addNRemove.Add = []string{resourceName}

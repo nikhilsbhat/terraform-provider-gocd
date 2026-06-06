@@ -37,7 +37,7 @@ func dataSourcePluginsSetting() *schema.Resource {
 	}
 }
 
-func dataSourcePluginsSettingRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourcePluginsSettingRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -61,7 +61,8 @@ func dataSourcePluginsSettingRead(_ context.Context, d *schema.ResourceData, met
 		return diag.Errorf("errored while flattening Configuration obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformResourceConfiguration, flattenedConfiguration); err != nil {
+	err = d.Set(utils.TerraformResourceConfiguration, flattenedConfiguration)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceConfiguration)
 	}
 

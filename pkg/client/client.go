@@ -12,7 +12,7 @@ import (
 	"github.com/nikhilsbhat/terraform-provider-gocd/pkg/utils"
 )
 
-func GetGoCDClient(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+func GetGoCDClient(_ context.Context, d *schema.ResourceData) (any, diag.Diagnostics) {
 	clientCfg := struct {
 		url         string
 		username    string
@@ -85,7 +85,8 @@ func GetGoCDClient(_ context.Context, d *schema.ResourceData) (interface{}, diag
 	}
 
 	if !clientCfg.skipCheck {
-		if _, err := goCDClient.GetServerHealth(); err != nil {
+		_, err := goCDClient.GetServerHealth()
+		if err != nil {
 			if !errors.Is(err, goErr.MarshalError{}) {
 				return nil, diag.Errorf("errored while connecting to server\nerror: %v\nkindly re-check the baseURL and authorization config before rerunning plan again", err)
 			}
@@ -100,7 +101,7 @@ type retryConfig struct {
 	waitTime int
 }
 
-func getRetryConfig(retryConfigs interface{}) retryConfig {
+func getRetryConfig(retryConfigs any) retryConfig {
 	retrySet := retryConfigs.(*schema.Set).List()
 	if len(retrySet) == 0 {
 		return retryConfig{
@@ -109,7 +110,7 @@ func getRetryConfig(retryConfigs interface{}) retryConfig {
 		}
 	}
 
-	flattenedRetryConfigs := retrySet[0].(map[string]interface{})
+	flattenedRetryConfigs := retrySet[0].(map[string]any)
 
 	return retryConfig{
 		count:    flattenedRetryConfigs[utils.TerraformResourceCount].(int),

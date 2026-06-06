@@ -125,7 +125,7 @@ func dataSourceAgentConfig() *schema.Resource {
 	}
 }
 
-func datasourceAgentRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceAgentRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -142,55 +142,68 @@ func datasourceAgentRead(_ context.Context, d *schema.ResourceData, meta interfa
 		return diag.Errorf("getting information of agent '%s' errored with: %v", agentID, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceHostname, response.Name); err != nil {
+	err = d.Set(utils.TerraformResourceHostname, response.Name)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceHostname)
 	}
 
-	if err = d.Set(utils.TerraformResourceElasticAgentAD, response.ElasticAgentID); err != nil {
+	err = d.Set(utils.TerraformResourceElasticAgentAD, response.ElasticAgentID)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceElasticAgentAD)
 	}
 
-	if err = d.Set(utils.TerraformResourceElasticPluginAD, response.ElasticPluginID); err != nil {
+	err = d.Set(utils.TerraformResourceElasticPluginAD, response.ElasticPluginID)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceElasticPluginAD)
 	}
 
-	if err = d.Set(utils.TerraformResourceIPAddress, response.IPAddress); err != nil {
+	err = d.Set(utils.TerraformResourceIPAddress, response.IPAddress)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceIPAddress)
 	}
 
-	if err = d.Set(utils.TerraformResourceSandbox, response.Sandbox); err != nil {
+	err = d.Set(utils.TerraformResourceSandbox, response.Sandbox)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceSandbox)
 	}
 
-	if err = d.Set(utils.TerraformResourceOperatingSystem, response.OS); err != nil {
+	err = d.Set(utils.TerraformResourceOperatingSystem, response.OS)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceOperatingSystem)
 	}
 
-	if err = d.Set(utils.TerraformResourceFreeSpace, cast.ToFloat64(response.DiskSpaceAvailable)); err != nil {
+	err = d.Set(utils.TerraformResourceFreeSpace, cast.ToFloat64(response.DiskSpaceAvailable))
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceFreeSpace)
 	}
 
-	if err = d.Set(utils.TerraformResourceAgentConfigState, response.ConfigState); err != nil {
+	err = d.Set(utils.TerraformResourceAgentConfigState, response.ConfigState)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAgentConfigState)
 	}
 
-	if err = d.Set(utils.TerraformResourceAgentState, response.CurrentState); err != nil {
+	err = d.Set(utils.TerraformResourceAgentState, response.CurrentState)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAgentState)
 	}
 
-	if err = d.Set(utils.TerraformResourceAgentVersion, response.Version); err != nil {
+	err = d.Set(utils.TerraformResourceAgentVersion, response.Version)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAgentVersion)
 	}
 
-	if err = d.Set(utils.TerraformResourceResources, response.Resources); err != nil {
+	err = d.Set(utils.TerraformResourceResources, response.Resources)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceResources)
 	}
 
-	if err = d.Set(utils.TerraformResourceEnvironments, flattenEnvironments(response.Environments)); err != nil {
+	err = d.Set(utils.TerraformResourceEnvironments, flattenEnvironments(response.Environments))
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceEnvironments)
 	}
 
-	if err = d.Set(utils.TerraformResourceBuildState, response.BuildState); err != nil {
+	err = d.Set(utils.TerraformResourceBuildState, response.BuildState)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceBuildState)
 	}
 
@@ -199,7 +212,8 @@ func datasourceAgentRead(_ context.Context, d *schema.ResourceData, meta interfa
 		return diag.Errorf("flattening '%s' errored with :%v", utils.TerraformResourceBuildDetails, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceBuildDetails, buildDetails); err != nil {
+	err = d.Set(utils.TerraformResourceBuildDetails, buildDetails)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceBuildDetails)
 	}
 
@@ -209,11 +223,11 @@ func datasourceAgentRead(_ context.Context, d *schema.ResourceData, meta interfa
 }
 
 func flattenEnvironments(envs any) []string {
-	envList := make([]string, 0)
-	environments := envs.([]interface{})
+	environments := envs.([]any)
+	envList := make([]string, 0, len(environments))
 
 	for _, environment := range environments {
-		newEnvironment := environment.(map[string]interface{})
+		newEnvironment := environment.(map[string]any)
 		envList = append(envList, newEnvironment["name"].(string))
 	}
 

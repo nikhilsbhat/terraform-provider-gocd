@@ -273,7 +273,7 @@ func pluginConfigurationSchema() map[string]*schema.Schema {
 	}
 }
 
-func datasourcePluginInfoRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourcePluginInfoRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -284,28 +284,34 @@ func datasourcePluginInfoRead(_ context.Context, d *schema.ResourceData, meta in
 	}
 
 	pluginID := utils.String(d.Get(utils.TerraformResourcePluginID))
+
 	response, err := defaultConfig.GetPluginInfo(pluginID)
 	if err != nil {
 		return diag.Errorf("getting plugin information of '%s' errored with: %v", pluginID, err)
 	}
 
-	if err = d.Set(utils.TerraformResourcePluginLocation, response.PluginFileLocation); err != nil {
+	err = d.Set(utils.TerraformResourcePluginLocation, response.PluginFileLocation)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginLocation)
 	}
 
-	if err = d.Set(utils.TerraformResourcePluginBundled, response.BundledPlugin); err != nil {
+	err = d.Set(utils.TerraformResourcePluginBundled, response.BundledPlugin)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginBundled)
 	}
 
-	if err = d.Set(utils.TerraformResourcePluginStatus, response.Status.State); err != nil {
+	err = d.Set(utils.TerraformResourcePluginStatus, response.Status.State)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginStatus)
 	}
 
-	if err = d.Set(utils.TerraformResourceExtensions, flattenPluginExtensions(response.Extensions)); err != nil {
+	err = d.Set(utils.TerraformResourceExtensions, flattenPluginExtensions(response.Extensions))
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceExtensions)
 	}
 
-	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+	err = d.Set(utils.TerraformResourceEtag, response.ETAG)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
@@ -314,11 +320,11 @@ func datasourcePluginInfoRead(_ context.Context, d *schema.ResourceData, meta in
 	return nil
 }
 
-func flattenPluginExtensions(extensions []gocd.PluginAttributes) []map[string]interface{} {
-	pluginExtensions := make([]map[string]interface{}, 0)
+func flattenPluginExtensions(extensions []gocd.PluginAttributes) []map[string]any {
+	pluginExtensions := make([]map[string]any, 0, len(extensions))
 
 	for _, extension := range extensions {
-		pluginExtension := make(map[string]interface{})
+		pluginExtension := make(map[string]any)
 
 		if len(extension.Type) != 0 {
 			pluginExtension["type"] = extension.Type
@@ -386,23 +392,23 @@ func flattenPluginExtensions(extensions []gocd.PluginAttributes) []map[string]in
 	return pluginExtensions
 }
 
-func flattenPluginSettingAttributeSchema(extensions *gocd.PluginSettingAttribute) []map[string]interface{} {
+func flattenPluginSettingAttributeSchema(extensions *gocd.PluginSettingAttribute) []map[string]any {
 	if extensions == nil {
 		return nil
 	}
 
-	return []map[string]interface{}{
+	return []map[string]any{
 		{
 			"configurations": flattenPluginConfigurations(extensions.Configurations),
 		},
 	}
 }
 
-func flattenPluginConfigurations(configurations []*gocd.PluginConfiguration) []map[string]interface{} {
-	pluginConfigurations := make([]map[string]interface{}, 0)
+func flattenPluginConfigurations(configurations []*gocd.PluginConfiguration) []map[string]any {
+	pluginConfigurations := make([]map[string]any, 0, len(configurations))
 
 	for _, configuration := range configurations {
-		pluginConfiguration := map[string]interface{}{
+		pluginConfiguration := map[string]any{
 			"key":             configuration.Key,
 			"value":           configuration.Value,
 			"encrypted_value": configuration.EncryptedValue,
@@ -419,8 +425,8 @@ func flattenPluginConfigurations(configurations []*gocd.PluginConfiguration) []m
 	return pluginConfigurations
 }
 
-func flattenMetadata(meta map[string]interface{}) map[string]interface{} {
-	metadata := make(map[string]interface{})
+func flattenMetadata(meta map[string]any) map[string]any {
+	metadata := make(map[string]any)
 
 	if _, ok := meta["part_of_identity"]; ok {
 		metadata["part_of_identity"] = meta["part_of_identity"]

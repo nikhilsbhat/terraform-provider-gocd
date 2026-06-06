@@ -69,7 +69,7 @@ func resourceAuthConfig() *schema.Resource {
 	}
 }
 
-func resourceAuthConfigCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAuthConfigCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -100,10 +100,11 @@ func resourceAuthConfigCreate(ctx context.Context, d *schema.ResourceData, meta 
 	return resourceAuthConfigRead(ctx, d, meta)
 }
 
-func resourceAuthConfigRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAuthConfigRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
+
 	response, err := defaultConfig.GetAuthConfig(profileID)
 	if err != nil {
 		return diag.Errorf("getting auth configuration %s errored with: %v", profileID, err)
@@ -116,7 +117,7 @@ func resourceAuthConfigRead(_ context.Context, d *schema.ResourceData, meta inte
 	return nil
 }
 
-func resourceAuthConfigUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAuthConfigUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChange(utils.TerraformResourceProperties) {
@@ -141,7 +142,7 @@ func resourceAuthConfigUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	return resourceAuthConfigRead(ctx, d, meta)
 }
 
-func resourceAuthConfigDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAuthConfigDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -161,10 +162,11 @@ func resourceAuthConfigDelete(_ context.Context, d *schema.ResourceData, meta in
 	return nil
 }
 
-func resourceAuthConfigImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceAuthConfigImport(_ context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Id())
+
 	response, err := defaultConfig.GetAuthConfig(profileID)
 	if err != nil {
 		return nil, fmt.Errorf("getting auth configuration %s errored with: %w", profileID, err)

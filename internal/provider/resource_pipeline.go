@@ -75,7 +75,7 @@ func resourcePipeline() *schema.Resource {
 	}
 }
 
-func resourcePipelineCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -102,17 +102,20 @@ func resourcePipelineCreate(ctx context.Context, d *schema.ResourceData, meta in
 	logger := logrus.New()
 	obj.CheckFileType(logger)
 
-	var configMap map[string]interface{}
+	var configMap map[string]any
+
 	switch objType := obj.CheckFileType(logger); objType {
 	case content.FileTypeJSON:
 		if err := json.Unmarshal([]byte(obj.String()), &configMap); err != nil {
 			return diag.Errorf("decoding pipeline config errored with: %v", err)
 		}
+
 		pipelineCfg.Config = configMap
 	case content.FileTypeYAML:
 		if err := yaml.Unmarshal([]byte(obj.String()), &configMap); err != nil {
 			return diag.Errorf("decoding pipeline config errored with: %v", err)
 		}
+
 		if err := d.Set(utils.TerraformResourceYAML, true); err != nil {
 			return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceYAML, err)
 		}
@@ -136,10 +139,11 @@ func resourcePipelineCreate(ctx context.Context, d *schema.ResourceData, meta in
 	return resourcePipelineRead(ctx, d, meta)
 }
 
-func resourcePipelineRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	name := utils.String(d.Get(utils.TerraformResourceName))
+
 	response, err := defaultConfig.GetPipelineConfig(name)
 	if err != nil {
 		return diag.Errorf("getting pipeline config %s errored with: %v", name, err)
@@ -152,7 +156,7 @@ func resourcePipelineRead(_ context.Context, d *schema.ResourceData, meta interf
 	return nil
 }
 
-func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChanges(utils.TerraformResourceConfig) {
@@ -167,19 +171,22 @@ func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, meta in
 		ETAG:  utils.String(d.Get(utils.TerraformResourceEtag)),
 	}
 
-	var configMap map[string]interface{}
+	var configMap map[string]any
 
 	config := utils.String(d.Get(utils.TerraformResourceConfig))
+
 	isYAML := utils.Bool(d.Get(utils.TerraformResourceYAML))
 	if isYAML {
 		if err := yaml.Unmarshal([]byte(config), &configMap); err != nil {
 			return diag.Errorf("decoding yaml pipeline config errored with: %v", err)
 		}
+
 		pluginConfig.Config = configMap
 	} else {
 		if err := json.Unmarshal([]byte(config), &configMap); err != nil {
 			return diag.Errorf("decoding json pipeline config errored with: %v", err)
 		}
+
 		pluginConfig.Config = configMap
 	}
 
@@ -190,7 +197,7 @@ func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, meta in
 	return resourcePipelineRead(ctx, d, meta)
 }
 
-func resourcePipelineDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()

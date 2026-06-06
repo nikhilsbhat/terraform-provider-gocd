@@ -47,7 +47,7 @@ func resourceElasticAgentProfile() *schema.Resource {
 	}
 }
 
-func resourceElasticAgentProfileCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceElasticAgentProfileCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -77,10 +77,11 @@ func resourceElasticAgentProfileCreate(ctx context.Context, d *schema.ResourceDa
 	return resourceElasticAgentProfileRead(ctx, d, meta)
 }
 
-func resourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
+
 	response, err := defaultConfig.GetElasticAgentProfile(profileID)
 	if err != nil {
 		return diag.Errorf("getting elastic agent profile configuration %s errored with: %v", profileID, err)
@@ -93,7 +94,7 @@ func resourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData, 
 	return nil
 }
 
-func resourceElasticAgentProfileUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceElasticAgentProfileUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChange(utils.TerraformResourceProperties) {
@@ -117,7 +118,7 @@ func resourceElasticAgentProfileUpdate(ctx context.Context, d *schema.ResourceDa
 	return resourceElasticAgentProfileRead(ctx, d, meta)
 }
 
-func resourceElasticAgentProfileDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceElasticAgentProfileDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {
@@ -136,10 +137,11 @@ func resourceElasticAgentProfileDelete(_ context.Context, d *schema.ResourceData
 	return nil
 }
 
-func resourceElasticAgentProfileImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceElasticAgentProfileImport(_ context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Id())
+
 	response, err := defaultConfig.GetElasticAgentProfile(profileID)
 	if err != nil {
 		return nil, fmt.Errorf("getting elastic agent profile configuration %s errored with: %w", profileID, err)

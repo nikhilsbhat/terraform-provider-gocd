@@ -55,12 +55,13 @@ type environmentChanges struct {
 	equal           bool
 }
 
-func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
 		return nil
 	}
+
 	id := d.Id()
 
 	if len(id) == 0 {
@@ -88,10 +89,11 @@ func resourceEnvironmentCreate(ctx context.Context, d *schema.ResourceData, meta
 	return resourceEnvironmentRead(ctx, d, meta)
 }
 
-func resourceEnvironmentRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEnvironmentRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	envName := utils.String(d.Get(utils.TerraformResourceName))
+
 	response, err := defaultConfig.GetEnvironment(envName)
 	if err != nil {
 		return diag.Errorf("getting environment %s errored with: %v", envName, err)
@@ -104,7 +106,7 @@ func resourceEnvironmentRead(_ context.Context, d *schema.ResourceData, meta int
 	return nil
 }
 
-func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if d.HasChange(utils.TerraformResourcePipelines) || d.HasChange(utils.TerraformResourceEnvVar) {
@@ -137,7 +139,7 @@ func resourceEnvironmentUpdate(ctx context.Context, d *schema.ResourceData, meta
 	return nil
 }
 
-func resourceEnvironmentDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEnvironmentDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {
@@ -156,10 +158,11 @@ func resourceEnvironmentDelete(_ context.Context, d *schema.ResourceData, meta i
 	return nil
 }
 
-func resourceEnvironmentImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceEnvironmentImport(_ context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	envName := utils.String(d.Id())
+
 	response, err := defaultConfig.GetEnvironment(envName)
 	if err != nil {
 		return nil, fmt.Errorf("getting environment %s errored with: %w", envName, err)
@@ -191,8 +194,9 @@ func resourceEnvironmentImport(_ context.Context, d *schema.ResourceData, meta i
 	return []*schema.ResourceData{d}, nil
 }
 
-func getEnvironments(configs interface{}) ([]gocd.EnvVars, error) {
+func getEnvironments(configs any) ([]gocd.EnvVars, error) {
 	var envVars []gocd.EnvVars
+
 	envs := configs.(*schema.Set).List()
 	if err := mapstructure.Decode(envs, &envVars); err != nil {
 		return nil, err
@@ -201,9 +205,11 @@ func getEnvironments(configs interface{}) ([]gocd.EnvVars, error) {
 	return envVars, nil
 }
 
-func getPipelines(configs interface{}) []gocd.Pipeline {
-	pipelines := make([]gocd.Pipeline, 0)
-	for _, pipeline := range configs.([]interface{}) {
+func getPipelines(configs any) []gocd.Pipeline {
+	pipelineConfigs := configs.([]any)
+	pipelines := make([]gocd.Pipeline, 0, len(pipelineConfigs))
+
+	for _, pipeline := range pipelineConfigs {
 		pipelines = append(pipelines, gocd.Pipeline{Name: utils.String(pipeline)})
 	}
 
@@ -212,6 +218,7 @@ func getPipelines(configs interface{}) []gocd.Pipeline {
 
 func getEnvChanges(d *schema.ResourceData) (environmentChanges, error) {
 	var changes environmentChanges
+
 	oldVars, newVars := d.GetChange(utils.TerraformResourceEnvVar)
 	oldPipelines, newPipelines := d.GetChange(utils.TerraformResourcePipelines)
 
@@ -229,6 +236,7 @@ func getEnvChanges(d *schema.ResourceData) (environmentChanges, error) {
 		if err != nil {
 			return changes, fmt.Errorf("reading environment errored with %w", err)
 		}
+
 		changes.envVarsChanges = envVars
 		changes.equal = false
 	}

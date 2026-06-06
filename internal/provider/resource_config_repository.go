@@ -70,7 +70,7 @@ func resourceConfigRepository() *schema.Resource {
 	}
 }
 
-func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -111,10 +111,11 @@ func resourceConfigRepoCreate(ctx context.Context, d *schema.ResourceData, meta 
 	return dataSourceConfigRepositoryRead(ctx, d, meta)
 }
 
-func resourceConfigRepoRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceConfigRepoRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
+
 	response, err := defaultConfig.GetConfigRepo(profileID)
 	if err != nil {
 		return diag.Errorf("getting config repo %s errored with: %v", profileID, err)
@@ -150,7 +151,7 @@ func resourceConfigRepoRead(_ context.Context, d *schema.ResourceData, meta inte
 	return nil
 }
 
-func resourceConfigRepoUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceConfigRepoUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChange(utils.TerraformResourceMaterial) &&
@@ -185,7 +186,7 @@ func resourceConfigRepoUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	return dataSourceConfigRepositoryRead(ctx, d, meta)
 }
 
-func resourceConfigRepoDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceConfigRepoDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {
@@ -204,10 +205,11 @@ func resourceConfigRepoDelete(_ context.Context, d *schema.ResourceData, meta in
 	return nil
 }
 
-func resourceConfigRepoImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceConfigRepoImport(_ context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Id())
+
 	response, err := defaultConfig.GetConfigRepo(profileID)
 	if err != nil {
 		return nil, fmt.Errorf("getting config repo %s errored with: %w", profileID, err)
@@ -247,7 +249,7 @@ func resourceConfigRepoImport(_ context.Context, d *schema.ResourceData, meta in
 	return []*schema.ResourceData{d}, nil
 }
 
-func flattenMapSlice(configs interface{}) ([]map[string]string, error) {
+func flattenMapSlice(configs any) ([]map[string]string, error) {
 	var rules []map[string]string
 	if err := mapstructure.Decode(configs, &rules); err != nil {
 		return nil, err
@@ -256,23 +258,23 @@ func flattenMapSlice(configs interface{}) ([]map[string]string, error) {
 	return rules, nil
 }
 
-func getMaterials(configs interface{}) (gocd.Material, error) {
+func getMaterials(configs any) (gocd.Material, error) {
 	if set, ok := configs.(*schema.Set); ok {
 		configs = set.List()
 	}
 
-	materialList, ok := configs.([]interface{})
+	materialList, ok := configs.([]any)
 	if !ok {
-		return gocd.Material{}, fmt.Errorf("expected []interface{} or *schema.Set, got %T", configs)
+		return gocd.Material{}, fmt.Errorf("expected []any or *schema.Set, got %T", configs)
 	}
 
 	if len(materialList) == 0 {
 		return gocd.Material{}, nil
 	}
 
-	flattenedMaterial, ok := materialList[0].(map[string]interface{})
+	flattenedMaterial, ok := materialList[0].(map[string]any)
 	if !ok {
-		return gocd.Material{}, fmt.Errorf("expected map[string]interface{} for material, got %T", materialList[0])
+		return gocd.Material{}, fmt.Errorf("expected map[string]any for material, got %T", materialList[0])
 	}
 
 	attrRaw := flattenedMaterial["attributes"]
@@ -280,20 +282,20 @@ func getMaterials(configs interface{}) (gocd.Material, error) {
 		return gocd.Material{}, nil
 	}
 
-	var attrList []interface{}
+	var attrList []any
 	if set, ok := attrRaw.(*schema.Set); ok {
 		attrList = set.List()
-	} else if list, ok := attrRaw.([]interface{}); ok {
+	} else if list, ok := attrRaw.([]any); ok {
 		attrList = list
 	} else {
-		return gocd.Material{}, fmt.Errorf("expected []interface{} or *schema.Set for attributes, got %T", attrRaw)
+		return gocd.Material{}, fmt.Errorf("expected []any or *schema.Set for attributes, got %T", attrRaw)
 	}
 
-	var flattenedAttr map[string]interface{}
+	var flattenedAttr map[string]any
 	if len(attrList) > 0 {
-		flattenedAttr, ok = attrList[0].(map[string]interface{})
+		flattenedAttr, ok = attrList[0].(map[string]any)
 		if !ok {
-			return gocd.Material{}, fmt.Errorf("expected map[string]interface{} for attributes[0], got %T", attrList[0])
+			return gocd.Material{}, fmt.Errorf("expected map[string]any for attributes[0], got %T", attrList[0])
 		}
 	}
 
@@ -332,17 +334,18 @@ func getMaterials(configs interface{}) (gocd.Material, error) {
 	return material, nil
 }
 
-func flattenMaterial(material gocd.Material) []interface{} {
+func flattenMaterial(material gocd.Material) []any {
 	if reflect.DeepEqual(material, gocd.Material{}) {
 		return nil
 	}
 
-	result := map[string]interface{}{
+	result := map[string]any{
 		"type":        material.Type,
 		"fingerprint": material.Fingerprint,
 	}
 
-	attrs := make(map[string]interface{})
+	attrs := make(map[string]any)
+
 	if !reflect.DeepEqual(material.Attributes, gocd.Attribute{}) {
 		for _, field := range []struct {
 			name string
@@ -382,8 +385,8 @@ func flattenMaterial(material gocd.Material) []interface{} {
 	}
 
 	if len(attrs) > 0 {
-		result["attributes"] = []interface{}{attrs}
+		result["attributes"] = []any{attrs}
 	}
 
-	return []interface{}{result}
+	return []any{result}
 }

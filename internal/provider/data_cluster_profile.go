@@ -44,7 +44,7 @@ func dataSourceClusterProfile() *schema.Resource {
 	}
 }
 
-func datasourceClusterProfileRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceClusterProfileRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -61,11 +61,13 @@ func datasourceClusterProfileRead(_ context.Context, d *schema.ResourceData, met
 		return diag.Errorf("getting cluster profile %s errored with: %v", profileID, err)
 	}
 
-	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+	err = d.Set(utils.TerraformResourcePluginID, response.PluginID)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePluginID)
 	}
 
-	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+	err = d.Set(utils.TerraformResourceEtag, response.ETAG)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
@@ -76,7 +78,8 @@ func datasourceClusterProfileRead(_ context.Context, d *schema.ResourceData, met
 		return diag.Errorf("errored while flattening Properties obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+	err = d.Set(utils.TerraformResourceProperties, flattenedProperties)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceProperties)
 	}
 

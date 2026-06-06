@@ -17,7 +17,7 @@ func dataSourceConfigRepository() *schema.Resource {
 	}
 }
 
-func dataSourceConfigRepositoryRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceConfigRepositoryRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -28,18 +28,21 @@ func dataSourceConfigRepositoryRead(_ context.Context, d *schema.ResourceData, m
 	}
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
+
 	response, err := defaultConfig.GetConfigRepo(profileID)
 	if err != nil {
 		return diag.Errorf("getting config repo %s errored with: %v", profileID, err)
 	}
 
-	if err = d.Set(utils.TerraformResourcePluginID, response.PluginID); err != nil {
+	err = d.Set(utils.TerraformResourcePluginID, response.PluginID)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourcePluginID, err)
 	}
 
 	flattened := flattenMaterialRead(response.Material)
 
-	if err = d.Set("material", flattened); err != nil {
+	err = d.Set("material", flattened)
+	if err != nil {
 		return diag.Errorf("setting material errored with: %v", err)
 	}
 
@@ -48,15 +51,18 @@ func dataSourceConfigRepositoryRead(_ context.Context, d *schema.ResourceData, m
 		return diag.Errorf("errored while flattening Configuration obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformResourceConfiguration, flattenedConfiguration); err != nil {
+	err = d.Set(utils.TerraformResourceConfiguration, flattenedConfiguration)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceConfiguration, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceRules, response.Rules); err != nil {
+	err = d.Set(utils.TerraformResourceRules, response.Rules)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceRules, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+	err = d.Set(utils.TerraformResourceEtag, response.ETAG)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
@@ -65,18 +71,18 @@ func dataSourceConfigRepositoryRead(_ context.Context, d *schema.ResourceData, m
 	return nil
 }
 
-func flattenMaterialRead(material gocd.Material) []interface{} {
+func flattenMaterialRead(material gocd.Material) []any {
 	if reflect.DeepEqual(material, gocd.Material{}) {
 		return nil
 	}
 
-	materialMap := map[string]interface{}{
+	materialMap := map[string]any{
 		"type":        material.Type,
 		"fingerprint": material.Fingerprint,
 	}
 
 	if !reflect.DeepEqual(material.Attributes, gocd.Attribute{}) {
-		attrsMap := map[string]interface{}{
+		attrsMap := map[string]any{
 			"url":                   material.Attributes.URL,
 			"username":              material.Attributes.Username,
 			"password":              material.Attributes.Password,
@@ -104,8 +110,8 @@ func flattenMaterialRead(material gocd.Material) []interface{} {
 			}
 		}
 
-		materialMap["attributes"] = []interface{}{attrsMap}
+		materialMap["attributes"] = []any{attrsMap}
 	}
 
-	return []interface{}{materialMap}
+	return []any{materialMap}
 }

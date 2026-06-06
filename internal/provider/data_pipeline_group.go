@@ -44,7 +44,7 @@ func dataSourcePipelineGroup() *schema.Resource {
 	}
 }
 
-func datasourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -61,15 +61,18 @@ func datasourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("getting pipeline group %s errored with: %v", groupID, err)
 	}
 
-	if err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines)); err != nil {
+	err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines))
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
 	}
 
-	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+	err = d.Set(utils.TerraformResourceEtag, response.ETAG)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceAuthorization, flattenAuthorization(response.Authorization)); err != nil {
+	err = d.Set(utils.TerraformResourceAuthorization, flattenAuthorization(response.Authorization))
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAuthorization)
 	}
 
@@ -78,8 +81,8 @@ func datasourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta
 	return nil
 }
 
-func flattenAuthorization(authorization gocd.PipelineGroupAuthorizationConfig) []map[string]interface{} {
-	return []map[string]interface{}{
+func flattenAuthorization(authorization gocd.PipelineGroupAuthorizationConfig) []map[string]any {
+	return []map[string]any{
 		{
 			"admins":  getUsersNRoles(authorization.Admins),
 			"operate": getUsersNRoles(authorization.Operate),
@@ -88,8 +91,8 @@ func flattenAuthorization(authorization gocd.PipelineGroupAuthorizationConfig) [
 	}
 }
 
-func getUsersNRoles(authorization gocd.AuthorizationConfig) []map[string]interface{} {
-	return []map[string]interface{}{
+func getUsersNRoles(authorization gocd.AuthorizationConfig) []map[string]any {
+	return []map[string]any{
 		{
 			"users": authorization.Users,
 			"roles": authorization.Roles,

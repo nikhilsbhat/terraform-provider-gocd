@@ -12,7 +12,7 @@
 //
 // ----------------------------------------------------------------------------
 //
-//nolint:gocritic
+//nolint:gocritic,godoclint
 package provider
 
 import (
@@ -62,7 +62,7 @@ func resourceClusterProfile() *schema.Resource {
 	}
 }
 
-func resourceClusterProfileCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceClusterProfileCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -92,10 +92,11 @@ func resourceClusterProfileCreate(ctx context.Context, d *schema.ResourceData, m
 	return resourceClusterProfileRead(ctx, d, meta)
 }
 
-func resourceClusterProfileRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceClusterProfileRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Get(utils.TerraformResourceProfileID))
+
 	response, err := defaultConfig.GetClusterProfile(profileID)
 	if err != nil {
 		return diag.Errorf("getting cluster profile configuration %s errored with: %v", profileID, err)
@@ -108,7 +109,7 @@ func resourceClusterProfileRead(_ context.Context, d *schema.ResourceData, meta 
 	return nil
 }
 
-func resourceClusterProfileUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceClusterProfileUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChange(utils.TerraformResourceProperties) {
@@ -132,7 +133,7 @@ func resourceClusterProfileUpdate(ctx context.Context, d *schema.ResourceData, m
 	return resourceClusterProfileRead(ctx, d, meta)
 }
 
-func resourceClusterProfileDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceClusterProfileDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -152,10 +153,11 @@ func resourceClusterProfileDelete(_ context.Context, d *schema.ResourceData, met
 	return nil
 }
 
-func resourceClusterProfileImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceClusterProfileImport(_ context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(d.Id())
+
 	response, err := defaultConfig.GetClusterProfile(profileID)
 	if err != nil {
 		return nil, fmt.Errorf("getting cluster profile configuration %s errored with: %w", profileID, err)

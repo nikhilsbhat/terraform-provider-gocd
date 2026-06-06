@@ -44,7 +44,7 @@ func dataSourceElasticAgentProfile() *schema.Resource {
 	}
 }
 
-func datasourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -61,7 +61,8 @@ func datasourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData
 		return diag.Errorf("getting elastic agent profile %s errored with: %v", profileID, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceClusterProfileID, response.ClusterProfileID); err != nil {
+	err = d.Set(utils.TerraformResourceClusterProfileID, response.ClusterProfileID)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceClusterProfileID)
 	}
 
@@ -72,11 +73,13 @@ func datasourceElasticAgentProfileRead(_ context.Context, d *schema.ResourceData
 		return diag.Errorf("errored while flattening Properties obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+	err = d.Set(utils.TerraformResourceProperties, flattenedProperties)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceProperties)
 	}
 
-	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+	err = d.Set(utils.TerraformResourceEtag, response.ETAG)
+	if err != nil {
 		return diag.Errorf("setting etag errored with %v", err)
 	}
 

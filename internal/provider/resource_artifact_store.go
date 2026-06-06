@@ -47,7 +47,7 @@ func resourceArtifactStore() *schema.Resource {
 	}
 }
 
-func resourceArtifactStoreCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceArtifactStoreCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -76,10 +76,11 @@ func resourceArtifactStoreCreate(ctx context.Context, d *schema.ResourceData, me
 	return resourceArtifactStoreRead(ctx, d, meta)
 }
 
-func resourceArtifactStoreRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceArtifactStoreRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	storeID := utils.String(d.Get(utils.TerraformResourceStoreID))
+
 	response, err := defaultConfig.GetArtifactStore(storeID)
 	if err != nil {
 		return diag.Errorf("getting artifact store configuration '%s' errored with: %v", storeID, err)
@@ -92,7 +93,7 @@ func resourceArtifactStoreRead(_ context.Context, d *schema.ResourceData, meta i
 	return nil
 }
 
-func resourceArtifactStoreUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceArtifactStoreUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChange(utils.TerraformResourceProperties) {
@@ -116,7 +117,7 @@ func resourceArtifactStoreUpdate(ctx context.Context, d *schema.ResourceData, me
 	return resourceArtifactStoreRead(ctx, d, meta)
 }
 
-func resourceArtifactStoreDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceArtifactStoreDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -136,10 +137,11 @@ func resourceArtifactStoreDelete(_ context.Context, d *schema.ResourceData, meta
 	return nil
 }
 
-func resourceArtifactStoreImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceArtifactStoreImport(_ context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	storeID := utils.String(d.Id())
+
 	response, err := defaultConfig.GetArtifactStore(storeID)
 	if err != nil {
 		return nil, fmt.Errorf("getting artifact store configuration '%s' errored with: %w", storeID, err)

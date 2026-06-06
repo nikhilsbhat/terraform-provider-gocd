@@ -46,7 +46,7 @@ func dataSourcePipeline() *schema.Resource {
 	}
 }
 
-func datasourcePipelineRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourcePipelineRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	id := d.Id()
@@ -68,11 +68,13 @@ func datasourcePipelineRead(_ context.Context, d *schema.ResourceData, meta inte
 		return diag.Errorf("translating pipeline config to json/yaml errored with: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformResourceConfig, pipelineCfg); err != nil {
+	err = d.Set(utils.TerraformResourceConfig, pipelineCfg)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceConfig, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceEtag, response.ETAG); err != nil {
+	err = d.Set(utils.TerraformResourceEtag, response.ETAG)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 

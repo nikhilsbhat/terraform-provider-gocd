@@ -34,7 +34,7 @@ func resourceEncryptValue() *schema.Resource {
 	}
 }
 
-func resourceEncryptValueCreate(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceEncryptValueCreate(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -50,6 +50,7 @@ func resourceEncryptValueCreate(_ context.Context, d *schema.ResourceData, meta 
 
 			return diag.Errorf("errored while fetching randomID %v", err)
 		}
+
 		id = newID
 	}
 
@@ -67,11 +68,11 @@ func resourceEncryptValueCreate(_ context.Context, d *schema.ResourceData, meta 
 	return nil
 }
 
-func resourceEncryptValueRead(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
+func resourceEncryptValueRead(_ context.Context, _ *schema.ResourceData, _ any) diag.Diagnostics {
 	return nil
 }
 
-func resourceEncryptValueDelete(_ context.Context, d *schema.ResourceData, _ interface{}) diag.Diagnostics {
+func resourceEncryptValueDelete(_ context.Context, d *schema.ResourceData, _ any) diag.Diagnostics {
 	id := d.Id()
 	if len(d.Id()) == 0 {
 		return diag.Errorf("resource with the ID '%s' not found", id)

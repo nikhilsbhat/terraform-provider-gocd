@@ -71,7 +71,7 @@ func resourceSecretConfig() *schema.Resource {
 	}
 }
 
-func resourceSecretConfigCreate(ctx context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceSecretConfigCreate(ctx context.Context, data *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !data.IsNewResource() {
@@ -107,7 +107,7 @@ func resourceSecretConfigCreate(ctx context.Context, data *schema.ResourceData, 
 	return resourceSecretConfigRead(ctx, data, meta)
 }
 
-func resourceSecretConfigUpdate(ctx context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceSecretConfigUpdate(ctx context.Context, data *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if data.HasChange(utils.TerraformResourceProperties) ||
@@ -149,10 +149,11 @@ func resourceSecretConfigUpdate(ctx context.Context, data *schema.ResourceData, 
 	return nil
 }
 
-func resourceSecretConfigRead(_ context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceSecretConfigRead(_ context.Context, data *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	profileID := utils.String(data.Get(utils.TerraformResourceProfileID))
+
 	response, err := defaultConfig.GetSecretConfig(profileID)
 	if err != nil {
 		return diag.Errorf("getting secret config %s errored with: %v", profileID, err)
@@ -165,7 +166,7 @@ func resourceSecretConfigRead(_ context.Context, data *schema.ResourceData, meta
 	return nil
 }
 
-func resourceSecretConfigDelete(_ context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceSecretConfigDelete(_ context.Context, data *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := data.Id(); len(id) == 0 {

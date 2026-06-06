@@ -12,7 +12,7 @@
 //
 // ----------------------------------------------------------------------------
 //
-//nolint:gocritic
+//nolint:gocritic,godoclint
 package provider
 
 import (
@@ -80,7 +80,7 @@ func resourcePluginsSetting() *schema.Resource {
 	}
 }
 
-func resourcePluginsSettingsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -109,7 +109,7 @@ func resourcePluginsSettingsCreate(ctx context.Context, d *schema.ResourceData, 
 	return resourcePluginsSettingsRead(ctx, d, meta)
 }
 
-func resourcePluginsSettingsRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	response, err := defaultConfig.GetPluginSettings(utils.String(d.Get(utils.TerraformResourcePluginID)))
@@ -124,7 +124,7 @@ func resourcePluginsSettingsRead(_ context.Context, d *schema.ResourceData, meta
 	return nil
 }
 
-func resourcePluginsSettingsUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChange(utils.TerraformResourcePluginConfiguration) {
@@ -147,7 +147,7 @@ func resourcePluginsSettingsUpdate(ctx context.Context, d *schema.ResourceData, 
 	return resourcePluginsSettingsRead(ctx, d, meta)
 }
 
-func resourcePluginsSettingsDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePluginsSettingsDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {
@@ -170,15 +170,19 @@ func resourcePluginsSettingsDelete(_ context.Context, d *schema.ResourceData, me
 	return nil
 }
 
-func getPluginConfigurationPTR(configs interface{}) []*gocd.PluginConfiguration {
-	pluginsConfigurations := make([]*gocd.PluginConfiguration, 0)
-	for i, config := range configs.(*schema.Set).List() {
-		v := config.(map[string]interface{})
+func getPluginConfigurationPTR(configs any) []*gocd.PluginConfiguration {
+	pluginConfigSet := configs.(*schema.Set).List()
+	pluginsConfigurations := make([]*gocd.PluginConfiguration, 0, len(pluginConfigSet))
+
+	for i, config := range pluginConfigSet {
+		v := config.(map[string]any)
+
 		pluginsConfigurations = append(pluginsConfigurations, &gocd.PluginConfiguration{
 			Key:            utils.String(v[utils.TerraformResourceKey]),
 			Value:          utils.String(v[utils.TerraformResourceValue]),
 			EncryptedValue: utils.String(v[utils.TerraformResourceENCValue]),
 		})
+
 		if isSecure, ok := v[utils.TerraformResourceIsSecure]; ok {
 			pluginsConfigurations[i].IsSecure = utils.Bool(isSecure)
 		}
@@ -187,15 +191,19 @@ func getPluginConfigurationPTR(configs interface{}) []*gocd.PluginConfiguration 
 	return pluginsConfigurations
 }
 
-func getPluginConfiguration(configs interface{}) []gocd.PluginConfiguration {
-	pluginsConfigurations := make([]gocd.PluginConfiguration, 0)
-	for i, config := range configs.(*schema.Set).List() {
-		v := config.(map[string]interface{})
+func getPluginConfiguration(configs any) []gocd.PluginConfiguration {
+	pluginConfigSet := configs.(*schema.Set).List()
+	pluginsConfigurations := make([]gocd.PluginConfiguration, 0, len(pluginConfigSet))
+
+	for i, config := range pluginConfigSet {
+		v := config.(map[string]any)
+
 		pluginsConfigurations = append(pluginsConfigurations, gocd.PluginConfiguration{
 			Key:            utils.String(v[utils.TerraformResourceKey]),
 			Value:          utils.String(v[utils.TerraformResourceValue]),
 			EncryptedValue: utils.String(v[utils.TerraformResourceENCValue]),
 		})
+
 		if isSecure, ok := v[utils.TerraformResourceIsSecure]; ok {
 			pluginsConfigurations[i].IsSecure = utils.Bool(isSecure)
 		}

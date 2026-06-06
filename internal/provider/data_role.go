@@ -76,7 +76,7 @@ func dataSourceRole() *schema.Resource {
 	}
 }
 
-func datasourceRoleRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func datasourceRoleRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 	resourceName := utils.String(d.Get(utils.TerraformResourceName))
 	id := d.Id()
@@ -91,7 +91,8 @@ func datasourceRoleRead(_ context.Context, d *schema.ResourceData, meta interfac
 		return diag.Errorf("getting role '%s' errored with: %v", id, err)
 	}
 
-	if err = d.Set(utils.TerraformResourceType, response.Type); err != nil {
+	err = d.Set(utils.TerraformResourceType, response.Type)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceType, err)
 	}
 
@@ -100,14 +101,16 @@ func datasourceRoleRead(_ context.Context, d *schema.ResourceData, meta interfac
 		return diag.Errorf("errored while flattening Policy from the role obtained: %v", err)
 	}
 
-	if err = d.Set(utils.TerraformResourcePolicy, flattenedPolicy); err != nil {
+	err = d.Set(utils.TerraformResourcePolicy, flattenedPolicy)
+	if err != nil {
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourcePolicy, err)
 	}
 
 	roleType := strings.ToLower(utils.String(d.Get(utils.TerraformResourceType)))
 	switch roleType {
 	case "plugin":
-		if err = d.Set(utils.TerraformResourceAuthConfigID, response.Attributes.AuthConfigID); err != nil {
+		err = d.Set(utils.TerraformResourceAuthConfigID, response.Attributes.AuthConfigID)
+		if err != nil {
 			return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceAuthConfigID, err)
 		}
 
@@ -118,11 +121,13 @@ func datasourceRoleRead(_ context.Context, d *schema.ResourceData, meta interfac
 			return diag.Errorf("errored while flattening properties of the role '%s' obtained with: %v", id, err)
 		}
 
-		if err = d.Set(utils.TerraformResourceProperties, flattenedProperties); err != nil {
+		err = d.Set(utils.TerraformResourceProperties, flattenedProperties)
+		if err != nil {
 			return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceProperties, err)
 		}
 	case "gocd":
-		if err = d.Set(utils.TerraformResourceUsers, response.Attributes.Users); err != nil {
+		err = d.Set(utils.TerraformResourceUsers, response.Attributes.Users)
+		if err != nil {
 			return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceUsers, err)
 		}
 	default:
@@ -136,7 +141,8 @@ func datasourceRoleRead(_ context.Context, d *schema.ResourceData, meta interfac
 
 	foundAdmin := utils.Contains(admins.Roles, resourceName)
 
-	if err = d.Set(utils.TerraformResourceSystemAdmin, foundAdmin); err != nil {
+	err = d.Set(utils.TerraformResourceSystemAdmin, foundAdmin)
+	if err != nil {
 		return diag.Errorf("setting '%s' errored with '%s'", utils.TerraformResourceEtag, err)
 	}
 

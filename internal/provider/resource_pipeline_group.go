@@ -53,7 +53,7 @@ func resourcePipelineGroup() *schema.Resource {
 	}
 }
 
-func resourcePipelineGroupCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineGroupCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.IsNewResource() {
@@ -88,10 +88,11 @@ func resourcePipelineGroupCreate(ctx context.Context, d *schema.ResourceData, me
 	return resourcePipelineGroupRead(ctx, d, meta)
 }
 
-func resourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	name := utils.String(d.Get(utils.TerraformResourceName))
+
 	response, err := defaultConfig.GetPipelineGroup(name)
 	if err != nil {
 		return diag.Errorf("getting pipeline group '%s' errored with: %v", name, err)
@@ -101,10 +102,18 @@ func resourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta i
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
+	if err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines)); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
+	}
+
+	if err = d.Set(utils.TerraformResourceAuthorization, flattenPipelineGroupAuthorizationConfig(response, d.Get(utils.TerraformResourceAuthorization))); err != nil {
+		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAuthorization)
+	}
+
 	return nil
 }
 
-func resourcePipelineGroupUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineGroupUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if !d.HasChange(utils.TerraformResourceAuthorization) && !d.HasChange(utils.TerraformResourcePipelines) {
@@ -127,7 +136,7 @@ func resourcePipelineGroupUpdate(ctx context.Context, d *schema.ResourceData, me
 	return resourcePipelineGroupRead(ctx, d, meta)
 }
 
-func resourcePipelineGroupDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePipelineGroupDelete(_ context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 	defaultConfig := meta.(gocd.GoCd)
 
 	if id := d.Id(); len(id) == 0 {
@@ -146,10 +155,11 @@ func resourcePipelineGroupDelete(_ context.Context, d *schema.ResourceData, meta
 	return nil
 }
 
-func resourcePipelineGroupImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourcePipelineGroupImport(_ context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 	defaultConfig := meta.(gocd.GoCd)
 
 	pipelineGroupName := utils.String(d.Id())
+
 	response, err := defaultConfig.GetPipelineGroup(pipelineGroupName)
 	if err != nil {
 		return nil, fmt.Errorf("getting pipeline group %s errored with: %w", pipelineGroupName, err)
@@ -167,7 +177,7 @@ func resourcePipelineGroupImport(_ context.Context, d *schema.ResourceData, meta
 		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
 	}
 
-	flattenedAuthVar := flattenPipelineGroupAuthorizationConfig(response)
+	flattenedAuthVar := flattenPipelineGroupAuthorizationConfig(response, d.Get(utils.TerraformResourceAuthorization))
 
 	if err = d.Set(utils.TerraformResourceAuthorization, flattenedAuthVar); err != nil {
 		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAuthorization)
@@ -176,61 +186,113 @@ func resourcePipelineGroupImport(_ context.Context, d *schema.ResourceData, meta
 	return []*schema.ResourceData{d}, nil
 }
 
-func flattenPipelineGroupAuthorizationConfig(pipelineGroup gocd.PipelineGroup) []interface{} {
-	authConfig := make(map[string]interface{})
+func flattenPipelineGroupAuthorizationConfig(pipelineGroup gocd.PipelineGroup, configuredAuth any) []any {
 	auth := pipelineGroup.Authorization
+	configuredAuthMap := getConfiguredPipelineGroupAuthorization(configuredAuth)
+	authConfig := make(map[string]any)
 
 	addSection := func(key string, section gocd.AuthorizationConfig) {
-		if len(section.Users) > 0 || len(section.Roles) > 0 {
-			authSection := map[string]interface{}{
-				"users": section.Users,
-				"roles": section.Roles,
-			}
-			authConfig[key] = []interface{}{authSection}
+		flattenedSection := flattenAuthorizationConfig(key, section, configuredAuthMap)
+		if len(flattenedSection) > 0 {
+			authConfig[key] = []any{flattenedSection}
 		}
 	}
 
-	addSection("view", auth.View)
-	addSection("operate", auth.Operate)
-	addSection("admins", auth.Admins)
+	addSection(utils.TerraformResourceView, auth.View)
+	addSection(utils.TerraformResourceOperate, auth.Operate)
+	addSection(utils.TerraformResourceAdmins, auth.Admins)
 
 	if len(authConfig) == 0 {
 		return nil
 	}
 
-	return []interface{}{authConfig}
+	return []any{authConfig}
 }
 
-func getPipelineGroupAuthorizationConfig(authConfig interface{}) gocd.PipelineGroupAuthorizationConfig {
-	var flattenedView, flattenedAdmins, flattenedOperate map[string]interface{}
+func flattenAuthorizationConfig(sectionName string, auth gocd.AuthorizationConfig, configuredAuth map[string]any) map[string]any {
+	authSection := make(map[string]any)
+
+	if len(auth.Users) > 0 || authConfigFieldWasSet(configuredAuth, sectionName, utils.TerraformResourceUsers) {
+		authSection[utils.TerraformResourceUsers] = auth.Users
+	}
+
+	if len(auth.Roles) > 0 || authConfigFieldWasSet(configuredAuth, sectionName, utils.TerraformResourceRoles) {
+		authSection[utils.TerraformResourceRoles] = auth.Roles
+	}
+
+	return authSection
+}
+
+func getConfiguredPipelineGroupAuthorization(configuredAuth any) map[string]any {
+	authSet, ok := configuredAuth.(*schema.Set)
+	if !ok || authSet.Len() == 0 {
+		return nil
+	}
+
+	configuredAuthMap, ok := authSet.List()[0].(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	return configuredAuthMap
+}
+
+func authConfigFieldWasSet(configuredAuth map[string]any, sectionName, fieldName string) bool {
+	if configuredAuth == nil {
+		return false
+	}
+
+	sectionSet, ok := configuredAuth[sectionName].(*schema.Set)
+	if !ok || sectionSet.Len() == 0 {
+		return false
+	}
+
+	section, ok := sectionSet.List()[0].(map[string]any)
+	if !ok {
+		return false
+	}
+
+	_, ok = section[fieldName]
+
+	return ok
+}
+
+func getPipelineGroupAuthorizationConfig(authConfig any) gocd.PipelineGroupAuthorizationConfig {
+	var flattenedView, flattenedAdmins, flattenedOperate map[string]any
 
 	var authorisationConfig gocd.PipelineGroupAuthorizationConfig
-	flattenedAuthConfig := authConfig.(*schema.Set).List()[0].(map[string]interface{})
+
+	authSet := authConfig.(*schema.Set)
+	if authSet.Len() == 0 {
+		return authorisationConfig
+	}
+
+	flattenedAuthConfig := authSet.List()[0].(map[string]any)
 
 	if len(flattenedAuthConfig[utils.TerraformResourceView].(*schema.Set).List()) > 0 {
-		flattenedView = flattenedAuthConfig[utils.TerraformResourceView].(*schema.Set).List()[0].(map[string]interface{})
+		flattenedView = flattenedAuthConfig[utils.TerraformResourceView].(*schema.Set).List()[0].(map[string]any)
 
 		authorisationConfig.View = gocd.AuthorizationConfig{
-			Roles: utils.GetSlice(flattenedView[utils.TerraformResourceRoles].([]interface{})),
-			Users: utils.GetSlice(flattenedView[utils.TerraformResourceUsers].([]interface{})),
+			Roles: utils.GetSlice(flattenedView[utils.TerraformResourceRoles].([]any)),
+			Users: utils.GetSlice(flattenedView[utils.TerraformResourceUsers].([]any)),
 		}
 	}
 
 	if len(flattenedAuthConfig[utils.TerraformResourceOperate].(*schema.Set).List()) > 0 {
-		flattenedOperate = flattenedAuthConfig[utils.TerraformResourceOperate].(*schema.Set).List()[0].(map[string]interface{})
+		flattenedOperate = flattenedAuthConfig[utils.TerraformResourceOperate].(*schema.Set).List()[0].(map[string]any)
 
 		authorisationConfig.Operate = gocd.AuthorizationConfig{
-			Roles: utils.GetSlice(flattenedOperate[utils.TerraformResourceRoles].([]interface{})),
-			Users: utils.GetSlice(flattenedOperate[utils.TerraformResourceUsers].([]interface{})),
+			Roles: utils.GetSlice(flattenedOperate[utils.TerraformResourceRoles].([]any)),
+			Users: utils.GetSlice(flattenedOperate[utils.TerraformResourceUsers].([]any)),
 		}
 	}
 
 	if len(flattenedAuthConfig[utils.TerraformResourceAdmins].(*schema.Set).List()) > 0 {
-		flattenedAdmins = flattenedAuthConfig[utils.TerraformResourceAdmins].(*schema.Set).List()[0].(map[string]interface{})
+		flattenedAdmins = flattenedAuthConfig[utils.TerraformResourceAdmins].(*schema.Set).List()[0].(map[string]any)
 
 		authorisationConfig.Admins = gocd.AuthorizationConfig{
-			Roles: utils.GetSlice(flattenedAdmins[utils.TerraformResourceRoles].([]interface{})),
-			Users: utils.GetSlice(flattenedAdmins[utils.TerraformResourceUsers].([]interface{})),
+			Roles: utils.GetSlice(flattenedAdmins[utils.TerraformResourceRoles].([]any)),
+			Users: utils.GetSlice(flattenedAdmins[utils.TerraformResourceUsers].([]any)),
 		}
 	}
 
