@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/go-cty/cty"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/nikhilsbhat/gocd-sdk-go"
@@ -27,7 +28,7 @@ func resourcePipelineGroup() *schema.Resource {
 				Description: "Name of the pipeline group to be created or updated.",
 			},
 			"pipelines": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Optional:    true,
 				ForceNew:    false,
 				Description: "List of pipelines to be associated with pipeline group.",
@@ -102,11 +103,13 @@ func resourcePipelineGroupRead(_ context.Context, d *schema.ResourceData, meta a
 		return diag.Errorf(settingAttrErrorTmp, utils.TerraformResourceEtag, err)
 	}
 
-	if err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines)); err != nil {
-		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
+	if configHasAttribute(d, utils.TerraformResourcePipelines) {
+		if err = d.Set(utils.TerraformResourcePipelines, flattenPipelines(response.Pipelines)); err != nil {
+			return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
+		}
 	}
 
-	if err = d.Set(utils.TerraformResourceAuthorization, flattenPipelineGroupAuthorizationConfig(response, d.Get(utils.TerraformResourceAuthorization))); err != nil {
+	if err = d.Set(utils.TerraformResourceAuthorization, flattenPipelineGroupAuthorizationConfig(response, d)); err != nil {
 		return diag.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAuthorization)
 	}
 
@@ -177,7 +180,7 @@ func resourcePipelineGroupImport(_ context.Context, d *schema.ResourceData, meta
 		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourcePipelines)
 	}
 
-	flattenedAuthVar := flattenPipelineGroupAuthorizationConfig(response, d.Get(utils.TerraformResourceAuthorization))
+	flattenedAuthVar := flattenPipelineGroupAuthorizationConfig(response, d)
 
 	if err = d.Set(utils.TerraformResourceAuthorization, flattenedAuthVar); err != nil {
 		return nil, fmt.Errorf(settingAttrErrorTmp, err, utils.TerraformResourceAuthorization)
@@ -186,13 +189,12 @@ func resourcePipelineGroupImport(_ context.Context, d *schema.ResourceData, meta
 	return []*schema.ResourceData{d}, nil
 }
 
-func flattenPipelineGroupAuthorizationConfig(pipelineGroup gocd.PipelineGroup, configuredAuth any) []any {
+func flattenPipelineGroupAuthorizationConfig(pipelineGroup gocd.PipelineGroup, d *schema.ResourceData) []any {
 	auth := pipelineGroup.Authorization
-	configuredAuthMap := getConfiguredPipelineGroupAuthorization(configuredAuth)
 	authConfig := make(map[string]any)
 
 	addSection := func(key string, section gocd.AuthorizationConfig) {
-		flattenedSection := flattenAuthorizationConfig(key, section, configuredAuthMap)
+		flattenedSection := flattenAuthorizationConfig(key, section, d)
 		if len(flattenedSection) > 0 {
 			authConfig[key] = []any{flattenedSection}
 		}
@@ -209,52 +211,93 @@ func flattenPipelineGroupAuthorizationConfig(pipelineGroup gocd.PipelineGroup, c
 	return []any{authConfig}
 }
 
-func flattenAuthorizationConfig(sectionName string, auth gocd.AuthorizationConfig, configuredAuth map[string]any) map[string]any {
+func flattenAuthorizationConfig(sectionName string, auth gocd.AuthorizationConfig, d *schema.ResourceData) map[string]any {
 	authSection := make(map[string]any)
 
-	if len(auth.Users) > 0 || authConfigFieldWasSet(configuredAuth, sectionName, utils.TerraformResourceUsers) {
+	if len(auth.Users) > 0 || authConfigFieldWasSet(d, sectionName, utils.TerraformResourceUsers) {
 		authSection[utils.TerraformResourceUsers] = auth.Users
 	}
 
-	if len(auth.Roles) > 0 || authConfigFieldWasSet(configuredAuth, sectionName, utils.TerraformResourceRoles) {
+	if len(auth.Roles) > 0 || authConfigFieldWasSet(d, sectionName, utils.TerraformResourceRoles) {
 		authSection[utils.TerraformResourceRoles] = auth.Roles
 	}
 
 	return authSection
 }
 
-func getConfiguredPipelineGroupAuthorization(configuredAuth any) map[string]any {
-	authSet, ok := configuredAuth.(*schema.Set)
-	if !ok || authSet.Len() == 0 {
-		return nil
+func authConfigFieldWasSet(d *schema.ResourceData, sectionName, fieldName string) bool {
+	authConfig := rawConfigAttribute(d, utils.TerraformResourceAuthorization)
+	if !authConfig.IsKnown() || authConfig.IsNull() || authConfig.LengthInt() == 0 {
+		return authConfigFieldWasSetInState(d, sectionName, fieldName)
 	}
 
-	configuredAuthMap, ok := authSet.List()[0].(map[string]any)
-	if !ok {
-		return nil
-	}
+	authConfigValues := authConfig.AsValueSlice()
 
-	return configuredAuthMap
+	return rawAuthConfigFieldWasSet(authConfigValues, sectionName, fieldName)
 }
 
-func authConfigFieldWasSet(configuredAuth map[string]any, sectionName, fieldName string) bool {
-	if configuredAuth == nil {
+func rawAuthConfigFieldWasSet(authConfigValues []cty.Value, sectionName, fieldName string) bool {
+	if len(authConfigValues) == 0 {
 		return false
 	}
 
-	sectionSet, ok := configuredAuth[sectionName].(*schema.Set)
-	if !ok || sectionSet.Len() == 0 {
+	section := authConfigValues[0].GetAttr(sectionName)
+	if !section.IsKnown() || section.IsNull() || section.LengthInt() == 0 {
 		return false
 	}
 
-	section, ok := sectionSet.List()[0].(map[string]any)
+	sectionValues := section.AsValueSlice()
+	if len(sectionValues) == 0 {
+		return false
+	}
+
+	field := sectionValues[0].GetAttr(fieldName)
+
+	return field.IsKnown() && !field.IsNull()
+}
+
+func authConfigFieldWasSetInState(d *schema.ResourceData, sectionName, fieldName string) bool {
+	authSet := d.Get(utils.TerraformResourceAuthorization).(*schema.Set)
+	if authSet.Len() == 0 {
+		return false
+	}
+
+	authConfig := authSet.List()[0].(map[string]any)
+
+	sectionSet, ok := authConfig[sectionName].(*schema.Set)
 	if !ok {
 		return false
 	}
 
-	_, ok = section[fieldName]
+	if sectionSet.Len() == 0 {
+		return false
+	}
 
-	return ok
+	section := sectionSet.List()[0].(map[string]any)
+
+	field, ok := section[fieldName]
+	if !ok {
+		return false
+	}
+
+	fieldValues, ok := field.([]any)
+
+	return ok && len(fieldValues) > 0
+}
+
+func configHasAttribute(d *schema.ResourceData, attrName string) bool {
+	value := rawConfigAttribute(d, attrName)
+
+	return value.IsKnown() && !value.IsNull()
+}
+
+func rawConfigAttribute(d *schema.ResourceData, attrName string) cty.Value {
+	value, diagnostics := d.GetRawConfigAt(cty.GetAttrPath(attrName))
+	if diagnostics.HasError() {
+		return cty.NullVal(cty.DynamicPseudoType)
+	}
+
+	return value
 }
 
 func getPipelineGroupAuthorizationConfig(authConfig any) gocd.PipelineGroupAuthorizationConfig {

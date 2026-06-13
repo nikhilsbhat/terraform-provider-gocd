@@ -206,7 +206,11 @@ func getEnvironments(configs any) ([]gocd.EnvVars, error) {
 }
 
 func getPipelines(configs any) []gocd.Pipeline {
-	pipelineConfigs := configs.([]any)
+	pipelineConfigs, ok := configs.([]any)
+	if !ok {
+		pipelineConfigs = configs.(*schema.Set).List()
+	}
+
 	pipelines := make([]gocd.Pipeline, 0, len(pipelineConfigs))
 
 	for _, pipeline := range pipelineConfigs {

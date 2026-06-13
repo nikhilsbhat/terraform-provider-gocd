@@ -54,7 +54,7 @@ terraform import gocd_pipeline_group.sample_group sample-group
 
 - `authorization` (Block Set) The authorization configuration for the pipeline group. (see [below for nested schema](#nestedblock--authorization))
 - `etag` (String) Etag used to track the pipeline group.
-- `pipelines` (List of String) List of pipelines to be associated with pipeline group.
+- `pipelines` (Set of String) List of pipelines to be associated with pipeline group.
 
 ### Read-Only
 
@@ -94,5 +94,4 @@ Optional:
 
 - `roles` (List of String) List of roles present in GoCD.
 - `users` (List of String) List of users present in GoCD.
-
 

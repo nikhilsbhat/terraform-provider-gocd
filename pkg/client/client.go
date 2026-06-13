@@ -71,17 +71,19 @@ func GetGoCDClient(_ context.Context, d *schema.ResourceData) (any, diag.Diagnos
 		BearerToken: clientCfg.bearerToken,
 	}
 
-	goCDClient := gocd.NewClient(clientCfg.url, goCDAuth, clientCfg.loglevel, clientCfg.ca)
+	goCDClient := newGoCDClient(clientCfg.url, goCDAuth, clientCfg.loglevel, clientCfg.ca)
 
 	retryConfigs := getRetryConfig(d.Get(utils.TerraformResourceRetries))
 	if retryConfigs.count != 0 {
 		log.Printf("setting API retry count to %d:\n", retryConfigs.count)
 		goCDClient.SetRetryCount(retryConfigs.count)
+		goCDClient.SetRawRetryCount(retryConfigs.count)
 	}
 
 	if retryConfigs.waitTime != 0 {
 		log.Printf("setting API retry wait time to %d:\n", retryConfigs.waitTime)
 		goCDClient.SetRetryWaitTime(retryConfigs.waitTime)
+		goCDClient.SetRawRetryWaitTime(retryConfigs.waitTime)
 	}
 
 	if !clientCfg.skipCheck {

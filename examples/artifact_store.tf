@@ -9,6 +9,14 @@ resource "gocd_artifact_store" "docker" {
     key   = "Region"
     value = "ap-south-1"
   }
+  properties {
+    key   = "AWSAccessKey"
+    value = "some access key"
+  }
+  properties {
+    key   = "AWSSecretAccessKey"
+    value = "some secret key"
+  }
 }
 
 data "gocd_artifact_store" "docker" {

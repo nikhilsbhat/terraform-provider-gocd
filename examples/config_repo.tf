@@ -19,7 +19,7 @@ resource "gocd_config_repository" "sample_config_repo" {
     attributes {
       url                = "https://github.com/config-repo/gocd-json-config-example.git"
       username           = "bob"
-      encrypted_password = "AES:17NGpP57xqWXpCMMRJjTYQ==:0hr/KawcCqZLYOCaYkT1dA=="
+      encrypted_password = "AES:hpM5puIHTWMI+4hX+Stl1A==:mEpzzXcJrSkiaBQHJ8SCiA=="
       branch             = "main"
       auto_update        = true
     }
@@ -42,7 +42,7 @@ resource "gocd_config_repository" "sample_config_repo_yamll" {
     attributes {
       url                = "https://github.com/nikhilsbhat/yamll.git"
       username           = "admin"
-      encrypted_password = "AES:CDA0hj0riaZr2iQUx7S4eg==:bR4F99e8ZOW58Fc/TLr6sA=="
+      encrypted_password = "AES:Y8pqp5DR3XmWr0fc0FlOyg==:bXXYZ3qPPkTqBcIosK3MIQ=="
       branch             = "main"
       auto_update        = false
     }
